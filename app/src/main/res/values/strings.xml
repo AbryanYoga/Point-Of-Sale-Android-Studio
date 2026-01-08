@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">Point Of Sales</string>
+
+    <string name="Selamat_Datang">Selamat Datang, %1$s</string>
+</resources>
