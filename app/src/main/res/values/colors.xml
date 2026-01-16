@@ -2,4 +2,13 @@
 <resources>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+    <color name="Estimasi">#1B1B1B</color>
+    <color name="shape_product">#FFFFFF</color>
+    <color name="Transparan">#FFFFFF</color>
+    <color name="color_akun">#4CAF50</color>
+    <color name="color_kategori">#2196F3</color>
+    <color name="color_cabang">#FF9800</color>
+    <color name="color_printer">#9C27B0</color>
+    <color name="Navbar">#FFFFFF</color>
+    <color name="CircleNavbar">#ff8c00</color>
 </resources>
