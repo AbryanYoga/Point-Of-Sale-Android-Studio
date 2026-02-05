@@ -12,6 +12,12 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.PointOfSales">
         <activity
+            android:name=".Kategori.ModKategoriActivity"
+            android:exported="false" />
+        <activity
+            android:name=".Kategori.DataKategoriActivity"
+            android:exported="false" />
+        <activity
             android:name=".MainActivity"
             android:exported="true">
             <intent-filter>
