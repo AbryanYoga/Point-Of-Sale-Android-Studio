@@ -14,4 +14,8 @@
     <color name="black">#000000</color>
     <color name="green_status">#4CAF50</color>
     <color name="red_status">#F44336</color>
+    <color name="TeksBawahNavbar">#000000</color>
+    <color name="icon">#000000</color>
+    <color name="CardKategori">#000000</color>
+    <color name="IconKategori">#ffffff</color>
 </resources>

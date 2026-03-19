@@ -2,7 +2,7 @@
 <com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/cvCARD_KATEGORI"
+    android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginHorizontal="8dp"
@@ -23,7 +23,7 @@
             android:id="@+id/cardKecilKategori"
             android:layout_width="48dp"
             android:layout_height="48dp"
-            app:cardBackgroundColor="?attr/colorTertiaryContainer"
+            app:cardBackgroundColor="@color/CardKategori"
             app:cardCornerRadius="12dp"
             app:cardElevation="0dp"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -36,7 +36,8 @@
                 android:layout_height="match_parent"
                 android:layout_margin="8dp"
                 android:contentDescription="Icon Kategori"
-                android:src="@drawable/kategori" />
+                android:src="@drawable/kategori"
+                android:tint="@color/IconKategori"/>
 
         </androidx.cardview.widget.CardView>
 
@@ -49,11 +50,12 @@
             android:ellipsize="end"
             android:maxLines="1"
             android:text="Kategori"
-            android:textColor="@color/black"
+            android:textColor="@color/TeksBawahNavbar"
             android:textSize="18sp"
             android:textStyle="bold"
             app:layout_constraintBottom_toBottomOf="@id/cardKecilKategori"
             app:layout_constraintEnd_toStartOf="@id/cardStatus"
+            app:layout_constraintHorizontal_bias="1.0"
             app:layout_constraintStart_toEndOf="@id/cardKecilKategori"
             app:layout_constraintTop_toTopOf="@id/cardKecilKategori" />
 
@@ -82,8 +84,8 @@
 
                 <View
                     android:id="@+id/indicatorStatus"
-                    android:layout_width="8dp"
-                    android:layout_height="8dp"
+                    android:layout_width="6dp"
+                    android:layout_height="5dp"
                     android:background="@drawable/circle_indikator"
                     android:backgroundTint="@color/green_status" />
 

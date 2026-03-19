@@ -8,10 +8,10 @@
             <InsightsFilterSettings>
               <option name="connection">
                 <ConnectionSetting>
-                  <option name="appId" value="PLACEHOLDER" />
-                  <option name="mobileSdkAppId" value="" />
-                  <option name="projectId" value="" />
-                  <option name="projectNumber" value="" />
+                  <option name="appId" value="com.abryan.pointofsales" />
+                  <option name="mobileSdkAppId" value="1:764532621960:android:b1e517b0961bc64270553d" />
+                  <option name="projectId" value="point-of-sales-android-studio" />
+                  <option name="projectNumber" value="764532621960" />
                 </ConnectionSetting>
               </option>
               <option name="signal" value="SIGNAL_UNSPECIFIED" />

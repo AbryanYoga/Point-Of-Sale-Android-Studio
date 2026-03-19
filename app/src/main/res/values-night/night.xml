@@ -5,4 +5,8 @@
     <color name="Transparan">#000000</color>
     <color name="Navbar">#141218</color>
     <color name="CircleNavbar">#BD08E4</color>
+    <color name="TeksBawahNavbar">#ffffff</color>
+    <color name="icon">#FFFFFF</color>
+    <color name="CardKategori">#FFFFFF</color>
+    <color name="IconKategori">#000000</color>
 </resources>
