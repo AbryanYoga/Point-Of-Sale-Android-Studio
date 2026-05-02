@@ -9,6 +9,7 @@ import androidx.cardview.widget.CardView
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.abryan.pointofsales.Kategori.DataKategoriActivity
+import com.abryan.pointofsales.Produk.DataProdukActivity
 
 class MainActivity : AppCompatActivity() {
 
@@ -32,6 +33,11 @@ class MainActivity : AppCompatActivity() {
         cardKategori.setOnClickListener {
             val intent = Intent(this, DataKategoriActivity::class.java)
             intent.putExtra("menu", "Kategori")
+            startActivity(intent)
+        }
+
+        cardProduk.setOnClickListener {
+            val intent = Intent(this, DataProdukActivity::class.java)
             startActivity(intent)
         }
 

@@ -18,4 +18,17 @@
     <color name="icon">#000000</color>
     <color name="CardKategori">#000000</color>
     <color name="IconKategori">#ffffff</color>
+
+
+    //Untuk kategori
+    <color name="backgroundModKategori">#FFFFFF</color>
+    <color name="Kembali">#EAEBFF</color>
+    <color name="CardDalam">#F0F1FF</color>
+    <color name="FieldEdit">#F7F8FF</color>
+    <color name="textModkategori">#2C2D4A</color>
+    <color name="TombolSimpan">#F0F1FF</color>
+
+    //Untuk Produk
+    <color name="BackgroundCardProduk">#FFFFFF</color>
+    <color name="IconProduk">#000000</color>
 </resources>

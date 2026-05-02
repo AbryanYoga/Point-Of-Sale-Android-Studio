@@ -1,4 +1,4 @@
-package com.abryan.pointofsales.Kategori
+package com.abryan.pointofsales.Adapter
 
 import android.content.Intent
 import android.content.res.ColorStateList
@@ -8,6 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.abryan.pointofsales.Kategori.ModKategoriActivity
 import com.abryan.pointofsales.R
 import com.abryan.pointofsales.model.ModelKategori
 
