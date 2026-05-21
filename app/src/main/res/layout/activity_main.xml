@@ -32,7 +32,7 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent">
 
-               <androidx.cardview.widget.CardView
+                <androidx.cardview.widget.CardView
                     android:id="@+id/cardProfile"
                     android:layout_width="45dp"
                     android:layout_height="45dp"
@@ -63,7 +63,7 @@
                     </androidx.constraintlayout.widget.ConstraintLayout>
                 </androidx.cardview.widget.CardView>
 
-               <androidx.cardview.widget.CardView
+                <androidx.cardview.widget.CardView
                     android:id="@+id/cardPrinter"
                     android:layout_width="42dp"
                     android:layout_height="42dp"
@@ -92,44 +92,22 @@
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
-           <TextView
-                android:id="@+id/tvnama"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Nama"
-                android:textColor="@color/icon"
-                android:textSize="25sp"
-                android:textStyle="bold"
-                android:layout_marginStart="20dp"
-                android:layout_marginTop="16dp"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/layoutTopBar"/>
-
-            <TextView
-                android:id="@+id/tvwelcome"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Selamat Datang"
-                android:textSize="20sp"
-                android:layout_marginStart="20dp"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/tvnama"/>
+            <!-- tvnama dihapus, tvwelcome tetap ada -->
 
             <androidx.cardview.widget.CardView
                 android:id="@+id/cardMoney"
                 android:layout_width="0dp"
                 android:layout_height="200dp"
-                android:layout_marginTop="20dp"
                 android:backgroundTint="#214EB1"
                 app:cardCornerRadius="20dp"
                 app:layout_constraintEnd_toEndOf="@id/cardLaporan"
                 app:layout_constraintStart_toStartOf="@id/cardTransaksi"
-                app:layout_constraintTop_toBottomOf="@id/tvwelcome">
+                tools:layout_editor_absoluteY="148dp">
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:background="@drawable/gradient_money"/>
+                    android:background="@drawable/gradient_money" />
 
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:layout_width="match_parent"
@@ -138,15 +116,15 @@
                     <ImageView
                         android:layout_width="115dp"
                         android:layout_height="115dp"
-                        android:src="@drawable/crown"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintTop_toTopOf="parent"
-                        app:layout_constraintBottom_toBottomOf="parent"
+                        android:layout_marginTop="40dp"
                         android:layout_marginEnd="20dp"
-                        app:tint="#FFFFFF"
                         android:alpha="0.3"
                         android:rotation="340"
-                        android:layout_marginTop="40dp"/>
+                        android:src="@drawable/crown"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:tint="#FFFFFF" />
 
                     <ImageView
                         android:id="@+id/FotoProfilCard"
@@ -159,9 +137,11 @@
                         android:scaleType="centerCrop"
                         android:src="@drawable/jokowi"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent"/>
+                        app:layout_constraintTop_toTopOf="parent" />
 
+                    <!-- Tambahkan ID tvNamaCard di sini -->
                     <TextView
+                        android:id="@+id/tvNamaCard"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="10dp"
@@ -171,7 +151,7 @@
                         android:textStyle="bold"
                         app:layout_constraintBottom_toBottomOf="@id/FotoProfilCard"
                         app:layout_constraintStart_toEndOf="@id/FotoProfilCard"
-                        app:layout_constraintTop_toTopOf="@id/FotoProfilCard"/>
+                        app:layout_constraintTop_toTopOf="@id/FotoProfilCard" />
 
                     <TextView
                         android:id="@+id/Estimasi"
@@ -182,7 +162,7 @@
                         android:textColor="#1b1b1b"
                         android:textSize="20sp"
                         app:layout_constraintStart_toStartOf="@id/FotoProfilCard"
-                        app:layout_constraintTop_toBottomOf="@id/FotoProfilCard"/>
+                        app:layout_constraintTop_toBottomOf="@id/FotoProfilCard" />
 
                     <TextView
                         android:id="@+id/Rupiah"
@@ -194,7 +174,7 @@
                         android:textSize="20sp"
                         android:textStyle="bold"
                         app:layout_constraintStart_toStartOf="@id/FotoProfilCard"
-                        app:layout_constraintTop_toBottomOf="@id/Estimasi"/>
+                        app:layout_constraintTop_toBottomOf="@id/Estimasi" />
 
                 </androidx.constraintlayout.widget.ConstraintLayout>
             </androidx.cardview.widget.CardView>
@@ -212,7 +192,7 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/cardMoney"/>
 
-           <androidx.cardview.widget.CardView
+            <androidx.cardview.widget.CardView
                 android:id="@+id/cardTransaksi"
                 android:layout_width="0dp"
                 android:layout_height="175dp"
@@ -374,7 +354,7 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/cardTransaksi"/>
 
-           <androidx.cardview.widget.CardView
+            <androidx.cardview.widget.CardView
                 android:id="@+id/cardProduk"
                 android:layout_width="0dp"
                 android:layout_height="150dp"
@@ -646,8 +626,6 @@
 
                 </androidx.constraintlayout.widget.ConstraintLayout>
             </androidx.cardview.widget.CardView>
-
-
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>

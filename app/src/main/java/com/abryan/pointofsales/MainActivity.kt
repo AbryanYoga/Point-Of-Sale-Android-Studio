@@ -2,6 +2,7 @@ package com.abryan.pointofsales
 
 import android.content.Intent
 import android.os.Bundle
+import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
@@ -11,6 +12,7 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.abryan.pointofsales.Kategori.DataKategoriActivity
 import com.abryan.pointofsales.Produk.DataProdukActivity
+import com.bumptech.glide.Glide
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
@@ -29,8 +31,7 @@ class MainActivity : AppCompatActivity() {
     lateinit var cardPrinter: CardView
     lateinit var cardProfile: CardView
 
-    lateinit var tvNama: TextView
-    lateinit var tvWelcome: TextView
+    lateinit var tvNamaCard: TextView
 
     private lateinit var auth: FirebaseAuth
     private lateinit var database: FirebaseDatabase
@@ -43,15 +44,8 @@ class MainActivity : AppCompatActivity() {
         auth = FirebaseAuth.getInstance()
         database = FirebaseDatabase.getInstance()
 
-        // Jika belum login, redirect ke LoginActivity
-        if (auth.currentUser == null) {
-            startActivity(Intent(this, LoginProfile::class.java))
-            finish()
-            return
-        }
-
         init()
-        loadUserData() // ← fungsi ini dipanggil di sini
+        loadUserData()
 
         cardKategori.setOnClickListener {
             val intent = Intent(this, DataKategoriActivity::class.java)
@@ -64,10 +58,9 @@ class MainActivity : AppCompatActivity() {
             startActivity(intent)
         }
 
+        // Klik profile → buka ProfileActivity, bukan langsung logout
         cardProfile.setOnClickListener {
-            auth.signOut()
-            startActivity(Intent(this, LoginProfile::class.java))
-            finish()
+            startActivity(Intent(this, Profile::class.java))
         }
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
@@ -87,28 +80,54 @@ class MainActivity : AppCompatActivity() {
         cardPrinter   = findViewById(R.id.cardPrinter)
         cardProfile   = findViewById(R.id.cardProfile)
         cardKategori  = findViewById(R.id.cardKategori)
-        tvNama        = findViewById(R.id.tvnama)
-        tvWelcome     = findViewById(R.id.tvwelcome)
+        tvNamaCard    = findViewById(R.id.tvNamaCard)
     }
 
-    // ← fungsi ini yang kurang, tambahkan di sini
     private fun loadUserData() {
-        val uid = auth.currentUser?.uid ?: return
+        val currentUser = auth.currentUser
 
-        database.reference.child("users").child(uid)
+        if (currentUser == null) {
+            tvNamaCard.text = "Guest"
+            return
+        }
+
+        database.reference.child("users").child(currentUser.uid)
             .addListenerForSingleValueEvent(object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
-                    val nama = snapshot.child("nama").getValue(String::class.java) ?: "User"
-                    tvNama.text = nama
-                    tvWelcome.text = "Selamat Datang, $nama!"
+                    val nama    = snapshot.child("nama").getValue(String::class.java) ?: "User"
+                    val fotoUrl = snapshot.child("fotoProfil").getValue(String::class.java)
+
+                    tvNamaCard.text = nama
+
+                    if (!fotoUrl.isNullOrEmpty()) {
+                        Glide.with(this@MainActivity)
+                            .load(fotoUrl)
+                            .placeholder(R.drawable.profil)
+                            .error(R.drawable.profil)
+                            .circleCrop()
+                            .into(findViewById(R.id.FotoProfil))
+
+                        Glide.with(this@MainActivity)
+                            .load(fotoUrl)
+                            .placeholder(R.drawable.jokowi)
+                            .error(R.drawable.jokowi)
+                            .circleCrop()
+                            .into(findViewById(R.id.FotoProfilCard))
+                    }
                 }
 
-                override fun onCancelled(error: DatabaseError) {                    Toast.makeText(
+                override fun onCancelled(error: DatabaseError) {
+                    Toast.makeText(
                         this@MainActivity,
                         "Gagal memuat data: ${error.message}",
                         Toast.LENGTH_SHORT
                     ).show()
                 }
             })
+    }
+
+    override fun onResume() {
+        super.onResume()
+        loadUserData()
     }
 }

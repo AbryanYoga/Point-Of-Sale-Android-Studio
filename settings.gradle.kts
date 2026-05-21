@@ -16,9 +16,9 @@ dependencyResolutionManagement {
     repositories {
         google()
         mavenCentral()
+        maven { url = uri("https://jitpack.io") }  // ← tambahkan ini untuk Glide
     }
 }
 
 rootProject.name = "Point Of Sales"
 include(":app")
- 
