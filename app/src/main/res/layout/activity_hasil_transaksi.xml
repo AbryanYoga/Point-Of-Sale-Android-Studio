@@ -1,0 +1,188 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".Transaksi.HasilTransaksiActivity"
+    android:background="#EAEBFF">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/cardBottomControls">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="20dp">
+
+            <androidx.cardview.widget.CardView
+                android:id="@+id/cardStruk"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:cardCornerRadius="12dp"
+                app:cardElevation="4dp"
+                android:backgroundTint="#FFFFFF"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:padding="24dp">
+
+                    <TextView
+                        android:id="@+id/tvStrukToko"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="TOKO ABRYAN"
+                        android:gravity="center"
+                        android:textStyle="bold"
+                        android:textSize="22sp"
+                        android:textColor="#000000"
+                        app:layout_constraintTop_toTopOf="parent"/>
+
+                    <TextView
+                        android:id="@+id/tvStrukTanggalWaktu"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Tanggal: - | Waktu: -"
+                        android:gravity="center"
+                        android:textSize="12sp"
+                        android:textColor="#555555"
+                        android:layout_marginTop="8dp"
+                        app:layout_constraintTop_toBottomOf="@id/tvStrukToko"/>
+
+                    <View
+                        android:id="@+id/line1"
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:background="#DDDDDD"
+                        android:layout_marginTop="16dp"
+                        app:layout_constraintTop_toBottomOf="@id/tvStrukTanggalWaktu"/>
+
+                    <TextView
+                        android:id="@+id/tvStrukItems"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Item 1 x 2 = Rp 20.000\nItem 2 x 1 = Rp 15.000"
+                        android:textColor="#000000"
+                        android:textSize="14sp"
+                        android:fontFamily="monospace"
+                        android:layout_marginTop="16dp"
+                        app:layout_constraintTop_toBottomOf="@id/line1"/>
+
+                    <View
+                        android:id="@+id/line2"
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:background="#DDDDDD"
+                        android:layout_marginTop="16dp"
+                        app:layout_constraintTop_toBottomOf="@id/tvStrukItems"/>
+
+                    <TextView
+                        android:id="@+id/tvLabelTotal"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="TOTAL"
+                        android:textStyle="bold"
+                        android:textColor="#000000"
+                        android:textSize="16sp"
+                        android:layout_marginTop="16dp"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/line2"/>
+
+                    <TextView
+                        android:id="@+id/tvStrukTotal"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Rp 0"
+                        android:textStyle="bold"
+                        android:textColor="#000000"
+                        android:textSize="18sp"
+                        android:layout_marginTop="16dp"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/line2"/>
+
+                    <TextView
+                        android:id="@+id/tvStrukFooter"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Terima Kasih Atas Kunjungan Anda"
+                        android:gravity="center"
+                        android:textSize="12sp"
+                        android:textColor="#555555"
+                        android:layout_marginTop="24dp"
+                        app:layout_constraintTop_toBottomOf="@id/tvStrukTotal"/>
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+            </androidx.cardview.widget.CardView>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </ScrollView>
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/cardBottomControls"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:backgroundTint="@color/CardDalam"
+        app:cardElevation="8dp"
+        app:layout_constraintBottom_toBottomOf="parent">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="20dp">
+
+            <Button
+                android:id="@+id/btnPrint"
+                android:layout_width="0dp"
+                android:layout_height="56dp"
+                android:backgroundTint="#2196F3"
+                android:text="Print Bluetooth (ESC/POS)"
+                android:textColor="@color/white"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                app:cornerRadius="16dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <Button
+                android:id="@+id/btnSelesai"
+                android:layout_width="0dp"
+                android:layout_height="56dp"
+                android:layout_marginTop="12dp"
+                android:layout_marginEnd="8dp"
+                android:backgroundTint="@color/Kembali"
+                android:text="Selesai"
+                android:textColor="@color/textModkategori"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                app:cornerRadius="16dp"
+                app:layout_constraintEnd_toStartOf="@id/btnTransaksiBaru"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/btnPrint" />
+
+            <Button
+                android:id="@+id/btnTransaksiBaru"
+                android:layout_width="0dp"
+                android:layout_height="56dp"
+                android:layout_marginTop="12dp"
+                android:layout_marginStart="8dp"
+                android:backgroundTint="@color/TombolSimpan"
+                android:text="Transaksi Baru"
+                android:textColor="@color/textModkategori"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                app:cornerRadius="16dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@id/btnSelesai"
+                app:layout_constraintTop_toBottomOf="@id/btnPrint" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.cardview.widget.CardView>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

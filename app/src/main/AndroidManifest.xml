@@ -3,6 +3,10 @@
     xmlns:tools="http://schemas.android.com/tools">
     <!-- Tambahkan permission internet -->
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.BLUETOOTH" />
+    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
+    <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />
+    <uses-permission android:name="android.permission.BLUETOOTH_SCAN" />
 
     <application
         android:allowBackup="true"
@@ -51,6 +55,27 @@
             android:exported="false" />
         <activity
             android:name=".Kategori.DataKategoriActivity"
+            android:exported="false" />
+        <activity
+            android:name=".Cabang.ModCabangActivity"
+            android:exported="false" />
+        <activity
+            android:name=".Cabang.DataCabangActivity"
+            android:exported="false" />
+        <activity
+            android:name=".Pegawai.ModPegawaiActivity"
+            android:exported="false" />
+        <activity
+            android:name=".Pegawai.DataPegawaiActivity"
+            android:exported="false" />
+        <activity
+            android:name=".Transaksi.TransaksiActivity"
+            android:exported="false" />
+        <activity
+            android:name=".Transaksi.HasilTransaksiActivity"
+            android:exported="false" />
+        <activity
+            android:name=".Transaksi.RiwayatTransaksiActivity"
             android:exported="false" />
     </application>
 

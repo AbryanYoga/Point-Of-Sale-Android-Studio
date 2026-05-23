@@ -11,7 +11,11 @@ import androidx.cardview.widget.CardView
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.abryan.pointofsales.Kategori.DataKategoriActivity
+import com.abryan.pointofsales.Cabang.DataCabangActivity
+import com.abryan.pointofsales.Pegawai.DataPegawaiActivity
 import com.abryan.pointofsales.Produk.DataProdukActivity
+import com.abryan.pointofsales.Transaksi.RiwayatTransaksiActivity
+import com.abryan.pointofsales.Transaksi.TransaksiActivity
 import com.bumptech.glide.Glide
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
@@ -56,6 +60,24 @@ class MainActivity : AppCompatActivity() {
         cardProduk.setOnClickListener {
             val intent = Intent(this, DataProdukActivity::class.java)
             startActivity(intent)
+        }
+
+        cardCabang.setOnClickListener {
+            val intent = Intent(this, DataCabangActivity::class.java)
+            startActivity(intent)
+        }
+
+        cardPegawai.setOnClickListener {
+            val intent = Intent(this, DataPegawaiActivity::class.java)
+            startActivity(intent)
+        }
+
+        cardTransaksi.setOnClickListener {
+            startActivity(Intent(this, TransaksiActivity::class.java))
+        }
+
+        cardPrinter.setOnClickListener {
+            startActivity(Intent(this, RiwayatTransaksiActivity::class.java))
         }
 
         // Klik profile → buka ProfileActivity, bukan langsung logout

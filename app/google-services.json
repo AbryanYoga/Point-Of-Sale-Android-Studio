@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "764532621960",
+    "project_id": "point-of-sales-android-studio",
+    "storage_bucket": "point-of-sales-android-studio.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:764532621960:android:b1e517b0961bc64270553d",
+        "android_client_info": {
+          "package_name": "com.abryan.pointofsales"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAcot0s0I92WctcrFb0TevjLNI8xMh4fBQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

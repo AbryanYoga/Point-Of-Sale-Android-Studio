@@ -46,6 +46,7 @@ dependencies {
     implementation(libs.androidx.constraintlayout)
     implementation(libs.firebase.database)
     implementation("com.google.firebase:firebase-auth-ktx:23.2.1")
+    implementation("com.github.DantSu:ESCPOS-ThermalPrinter-Android:3.3.0")
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
