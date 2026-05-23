@@ -2,12 +2,14 @@ package com.abryan.pointofsales.Kategori
 
 import android.os.Bundle
 import android.util.Log
+import android.view.View
 import android.widget.ArrayAdapter
 import android.widget.Button
 import android.widget.EditText
 import android.widget.Spinner
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.cardview.widget.CardView
 import androidx.core.view.ViewCompat
@@ -25,6 +27,7 @@ class ModKategoriActivity : AppCompatActivity() {
     private lateinit var etNamaKategori: EditText
     private lateinit var spinnerStatus: Spinner
     private lateinit var btnSimpan: Button
+    private lateinit var btnHapus: Button
 
     private var editKategori: ModelKategori? = null
 
@@ -36,13 +39,17 @@ class ModKategoriActivity : AppCompatActivity() {
         init()
         setupSpinner()
 
-        // Cek mode edit
         editKategori = intent.getParcelableExtra("kategori")
-        editKategori?.let { data ->
+        if (editKategori != null) {
+            val data = editKategori!!
             etNamaKategori.setText(data.namaKategori)
             val statusList = arrayOf("Aktif", "Non Aktif")
             val index = statusList.indexOf(data.statusKategori)
             if (index >= 0) spinnerStatus.setSelection(index)
+            
+            btnHapus.visibility = View.VISIBLE
+        } else {
+            btnHapus.visibility = View.GONE
         }
 
         cardBack.setOnClickListener {
@@ -50,8 +57,11 @@ class ModKategoriActivity : AppCompatActivity() {
         }
 
         btnSimpan.setOnClickListener {
-            Log.d("DEBUG", "Tombol simpan ditekan")
             simpan()
+        }
+        
+        btnHapus.setOnClickListener {
+            hapus()
         }
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
@@ -60,12 +70,32 @@ class ModKategoriActivity : AppCompatActivity() {
             insets
         }
     }
+    
+    private fun hapus() {
+        val idHapus = editKategori?.idKategori ?: return
+        
+        AlertDialog.Builder(this)
+            .setTitle("Hapus Data")
+            .setMessage("Apakah Anda yakin ingin menghapus data ini? Tindakan ini tidak dapat dibatalkan.")
+            .setPositiveButton("Hapus") { dialog, _ ->
+                myRef.child(idHapus).removeValue()
+                    .addOnSuccessListener {
+                        Toast.makeText(this, "Data berhasil dihapus", Toast.LENGTH_SHORT).show()
+                        finish()
+                    }
+                    .addOnFailureListener { e ->
+                        Toast.makeText(this, "Gagal menghapus: ${e.message}", Toast.LENGTH_SHORT).show()
+                    }
+            }
+            .setNegativeButton("Batal") { dialog, _ ->
+                dialog.dismiss()
+            }
+            .show()
+    }
 
     private fun simpan() {
         val namaKategori = etNamaKategori.text.toString().trim()
         val status = spinnerStatus.selectedItem.toString()
-
-        Log.d("DEBUG", "namaKategori: $namaKategori, status: $status")
 
         if (namaKategori.isEmpty()) {
             etNamaKategori.error = "Nama kategori tidak boleh kosong"
@@ -74,12 +104,9 @@ class ModKategoriActivity : AppCompatActivity() {
         }
 
         btnSimpan.isEnabled = false
-        Log.d("DEBUG", "Mulai simpan ke Firebase...")
 
         if (editKategori != null) {
-            // Mode EDIT
             val kategoriId = editKategori!!.idKategori ?: run {
-                Log.e("DEBUG", "idKategori null!")
                 btnSimpan.isEnabled = true
                 return
             }
@@ -92,27 +119,21 @@ class ModKategoriActivity : AppCompatActivity() {
 
             myRef.child(kategoriId).updateChildren(kategoriData)
                 .addOnSuccessListener {
-                    Log.d("DEBUG", "Update berhasil")
                     Toast.makeText(this, "Kategori berhasil diupdate", Toast.LENGTH_SHORT).show()
                     finish()
                 }
                 .addOnFailureListener { error ->
-                    Log.e("DEBUG", "Update gagal: ${error.message}")
                     btnSimpan.isEnabled = true
                     Toast.makeText(this, "Gagal update: ${error.message}", Toast.LENGTH_SHORT).show()
                 }
 
         } else {
-            // Mode TAMBAH
             val kategoriBaru = myRef.push()
             val kategoriId = kategoriBaru.key ?: run {
-                Log.e("DEBUG", "key null!")
-                Toast.makeText(this, "Gagal generate ID, cek koneksi", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "Gagal generate ID", Toast.LENGTH_SHORT).show()
                 btnSimpan.isEnabled = true
                 return
             }
-
-            Log.d("DEBUG", "kategoriId: $kategoriId")
 
             val kategoriData = hashMapOf<String, Any>(
                 "idKategori" to kategoriId,
@@ -122,12 +143,10 @@ class ModKategoriActivity : AppCompatActivity() {
 
             kategoriBaru.setValue(kategoriData)
                 .addOnSuccessListener {
-                    Log.d("DEBUG", "Simpan berhasil")
                     Toast.makeText(this, "Kategori berhasil disimpan", Toast.LENGTH_SHORT).show()
                     finish()
                 }
                 .addOnFailureListener { error ->
-                    Log.e("DEBUG", "Simpan gagal: ${error.message}")
                     btnSimpan.isEnabled = true
                     Toast.makeText(this, "Gagal menyimpan: ${error.message}", Toast.LENGTH_SHORT).show()
                 }
@@ -139,6 +158,7 @@ class ModKategoriActivity : AppCompatActivity() {
         etNamaKategori = findViewById(R.id.etNamaKategori)
         spinnerStatus = findViewById(R.id.spinnerStatus)
         btnSimpan = findViewById(R.id.btnSimpan)
+        btnHapus = findViewById(R.id.btnHapus)
     }
 
     private fun setupSpinner() {

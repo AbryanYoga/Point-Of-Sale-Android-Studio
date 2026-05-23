@@ -2,12 +2,14 @@ package com.abryan.pointofsales.Cabang
 
 import android.os.Bundle
 import android.util.Log
+import android.view.View
 import android.widget.ArrayAdapter
 import android.widget.Button
 import android.widget.EditText
 import android.widget.Spinner
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.cardview.widget.CardView
 import androidx.core.view.ViewCompat
@@ -29,6 +31,7 @@ class ModCabangActivity : AppCompatActivity() {
     private lateinit var etAlamatCabang: EditText
     private lateinit var spinnerStatus: Spinner
     private lateinit var btnSimpan: Button
+    private lateinit var btnHapus: Button
 
     private var editCabang: ModelCabang? = null
 
@@ -40,9 +43,9 @@ class ModCabangActivity : AppCompatActivity() {
         init()
         setupSpinner()
 
-        // Cek mode edit
         editCabang = intent.getParcelableExtra("cabang")
-        editCabang?.let { data ->
+        if (editCabang != null) {
+            val data = editCabang!!
             etNamaCabang.setText(data.namaCabang)
             etKodeCabang.setText(data.kodeCabang)
             etPenanggungJawab.setText(data.penanggungJawab)
@@ -51,6 +54,10 @@ class ModCabangActivity : AppCompatActivity() {
             val statusList = arrayOf("Aktif", "Non Aktif")
             val index = statusList.indexOf(data.statusCabang)
             if (index >= 0) spinnerStatus.setSelection(index)
+            
+            btnHapus.visibility = View.VISIBLE
+        } else {
+            btnHapus.visibility = View.GONE
         }
 
         cardBack.setOnClickListener {
@@ -60,12 +67,38 @@ class ModCabangActivity : AppCompatActivity() {
         btnSimpan.setOnClickListener {
             simpan()
         }
+        
+        btnHapus.setOnClickListener {
+            hapus()
+        }
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
+    }
+    
+    private fun hapus() {
+        val idHapus = editCabang?.idCabang ?: return
+        
+        AlertDialog.Builder(this)
+            .setTitle("Hapus Data")
+            .setMessage("Apakah Anda yakin ingin menghapus data ini? Tindakan ini tidak dapat dibatalkan.")
+            .setPositiveButton("Hapus") { dialog, _ ->
+                myRef.child(idHapus).removeValue()
+                    .addOnSuccessListener {
+                        Toast.makeText(this, "Data berhasil dihapus", Toast.LENGTH_SHORT).show()
+                        finish()
+                    }
+                    .addOnFailureListener { e ->
+                        Toast.makeText(this, "Gagal menghapus: ${e.message}", Toast.LENGTH_SHORT).show()
+                    }
+            }
+            .setNegativeButton("Batal") { dialog, _ ->
+                dialog.dismiss()
+            }
+            .show()
     }
 
     private fun simpan() {
@@ -105,7 +138,6 @@ class ModCabangActivity : AppCompatActivity() {
         btnSimpan.isEnabled = false
 
         if (editCabang != null) {
-            // Mode EDIT
             val cabangId = editCabang!!.idCabang ?: run {
                 btnSimpan.isEnabled = true
                 return
@@ -132,10 +164,9 @@ class ModCabangActivity : AppCompatActivity() {
                 }
 
         } else {
-            // Mode TAMBAH
             val cabangBaru = myRef.push()
             val cabangId = cabangBaru.key ?: run {
-                Toast.makeText(this, "Gagal generate ID, cek koneksi", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "Gagal generate ID", Toast.LENGTH_SHORT).show()
                 btnSimpan.isEnabled = true
                 return
             }
@@ -171,6 +202,7 @@ class ModCabangActivity : AppCompatActivity() {
         etAlamatCabang = findViewById(R.id.etAlamatCabang)
         spinnerStatus = findViewById(R.id.spinnerStatus)
         btnSimpan = findViewById(R.id.btnSimpan)
+        btnHapus = findViewById(R.id.btnHapus)
     }
 
     private fun setupSpinner() {

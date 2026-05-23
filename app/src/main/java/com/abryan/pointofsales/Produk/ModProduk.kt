@@ -3,13 +3,14 @@ package com.abryan.pointofsales.Produk
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.Log
+import android.view.View
 import android.widget.ArrayAdapter
 import android.widget.Button
 import android.widget.EditText
 import android.widget.Spinner
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.cardview.widget.CardView
 import androidx.core.view.ViewCompat
@@ -33,6 +34,7 @@ class ModProduk : AppCompatActivity() {
     private lateinit var spinnerCabang: Spinner
     private lateinit var spinnerStatus: Spinner
     private lateinit var btnSimpan: Button
+    private lateinit var btnHapus: Button
 
     private var editProduk: ModelProduk? = null
 
@@ -51,9 +53,9 @@ class ModProduk : AppCompatActivity() {
         setupSpinner()
         setupFormatHarga()
 
-        // Cek mode edit
         editProduk = intent.getSerializableExtra("produk") as? ModelProduk
-        editProduk?.let { data ->
+        if (editProduk != null) {
+            val data = editProduk!!
             val formatRupiah = NumberFormat.getNumberInstance(Locale("id", "ID"))
             etNamaProduk.setText(data.nama)
             etHargaProduk.setText(formatRupiah.format(data.harga))
@@ -67,10 +69,37 @@ class ModProduk : AppCompatActivity() {
 
             val statusList = arrayOf("-- Pilih Status --", "Aktif", "Non Aktif")
             spinnerStatus.setSelection(statusList.indexOf(data.status).takeIf { it >= 0 } ?: 0)
+            
+            btnHapus.visibility = View.VISIBLE
+        } else {
+            btnHapus.visibility = View.GONE
         }
 
         cardBack.setOnClickListener { finish() }
         btnSimpan.setOnClickListener { simpan() }
+        btnHapus.setOnClickListener { hapus() }
+    }
+    
+    private fun hapus() {
+        val idHapus = editProduk?.id ?: return
+        
+        AlertDialog.Builder(this)
+            .setTitle("Hapus Data")
+            .setMessage("Apakah Anda yakin ingin menghapus data ini? Tindakan ini tidak dapat dibatalkan.")
+            .setPositiveButton("Hapus") { dialog, _ ->
+                myRef.child(idHapus).removeValue()
+                    .addOnSuccessListener {
+                        Toast.makeText(this, "Data berhasil dihapus", Toast.LENGTH_SHORT).show()
+                        finish()
+                    }
+                    .addOnFailureListener { e ->
+                        Toast.makeText(this, "Gagal menghapus: ${e.message}", Toast.LENGTH_SHORT).show()
+                    }
+            }
+            .setNegativeButton("Batal") { dialog, _ ->
+                dialog.dismiss()
+            }
+            .show()
     }
 
     private fun init() {
@@ -82,6 +111,7 @@ class ModProduk : AppCompatActivity() {
         spinnerCabang = findViewById(R.id.spinnerCabang)
         spinnerStatus = findViewById(R.id.spinnerStatus)
         btnSimpan = findViewById(R.id.btnSimpan)
+        btnHapus = findViewById(R.id.btnHapus)
     }
 
     private fun setupSpinner() {
@@ -132,7 +162,6 @@ class ModProduk : AppCompatActivity() {
         val cabang = spinnerCabang.selectedItem.toString()
         val status = spinnerStatus.selectedItem.toString()
 
-        // Validasi
         if (nama.isEmpty()) {
             etNamaProduk.error = "Nama produk tidak boleh kosong"
             etNamaProduk.requestFocus()
@@ -164,7 +193,6 @@ class ModProduk : AppCompatActivity() {
         btnSimpan.isEnabled = false
 
         if (editProduk != null) {
-            // Mode EDIT
             val produkId = editProduk!!.id
             val produkData = hashMapOf<String, Any>(
                 "id" to produkId,
@@ -185,7 +213,6 @@ class ModProduk : AppCompatActivity() {
                     Toast.makeText(this, "Gagal update: ${error.message}", Toast.LENGTH_SHORT).show()
                 }
         } else {
-            // Mode TAMBAH
             val produkBaru = myRef.push()
             val produkId = produkBaru.key ?: run {
                 Toast.makeText(this, "Gagal generate ID", Toast.LENGTH_SHORT).show()

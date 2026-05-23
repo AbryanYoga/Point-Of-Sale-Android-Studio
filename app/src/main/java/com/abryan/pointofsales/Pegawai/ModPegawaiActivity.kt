@@ -1,12 +1,14 @@
 package com.abryan.pointofsales.Pegawai
 
 import android.os.Bundle
+import android.view.View
 import android.widget.ArrayAdapter
 import android.widget.Button
 import android.widget.EditText
 import android.widget.Spinner
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.cardview.widget.CardView
 import androidx.core.view.ViewCompat
@@ -32,6 +34,7 @@ class ModPegawaiActivity : AppCompatActivity() {
     private lateinit var etAlamatPegawai: EditText
     private lateinit var spinnerStatus: Spinner
     private lateinit var btnSimpan: Button
+    private lateinit var btnHapus: Button
 
     private var editPegawai: ModelPegawai? = null
     private var listCabangStr: ArrayList<String> = ArrayList()
@@ -47,7 +50,8 @@ class ModPegawaiActivity : AppCompatActivity() {
         loadCabang()
 
         editPegawai = intent.getParcelableExtra("pegawai")
-        editPegawai?.let { data ->
+        if (editPegawai != null) {
+            val data = editPegawai!!
             etNamaPegawai.setText(data.namaPegawai)
             etNomorHp.setText(data.nomorHp)
             etAlamatPegawai.setText(data.alamatPegawai)
@@ -59,16 +63,43 @@ class ModPegawaiActivity : AppCompatActivity() {
             val statusList = arrayOf("Aktif", "Non Aktif")
             val statusIndex = statusList.indexOf(data.statusPegawai)
             if (statusIndex >= 0) spinnerStatus.setSelection(statusIndex)
+            
+            btnHapus.visibility = View.VISIBLE
+        } else {
+            btnHapus.visibility = View.GONE
         }
 
         cardBack.setOnClickListener { finish() }
         btnSimpan.setOnClickListener { simpan() }
+        btnHapus.setOnClickListener { hapus() }
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
+    }
+
+    private fun hapus() {
+        val idHapus = editPegawai?.idPegawai ?: return
+        
+        AlertDialog.Builder(this)
+            .setTitle("Hapus Data")
+            .setMessage("Apakah Anda yakin ingin menghapus data ini? Tindakan ini tidak dapat dibatalkan.")
+            .setPositiveButton("Hapus") { dialog, _ ->
+                pegawaiRef.child(idHapus).removeValue()
+                    .addOnSuccessListener {
+                        Toast.makeText(this, "Data berhasil dihapus", Toast.LENGTH_SHORT).show()
+                        finish()
+                    }
+                    .addOnFailureListener { e ->
+                        Toast.makeText(this, "Gagal menghapus: ${e.message}", Toast.LENGTH_SHORT).show()
+                    }
+            }
+            .setNegativeButton("Batal") { dialog, _ ->
+                dialog.dismiss()
+            }
+            .show()
     }
 
     private fun loadCabang() {
@@ -83,11 +114,10 @@ class ModPegawaiActivity : AppCompatActivity() {
                     }
                 }
                 
-                // Pengecekan edit mode setelah data di load agar spinner bisa setSelection
                 editPegawai?.let { data ->
                     val cabangTersimpan = data.cabangPegawai
                     if (!listCabangStr.contains(cabangTersimpan.toString()) && cabangTersimpan != null) {
-                        listCabangStr.add(cabangTersimpan) // Ensure saved branch is in the list even if no longer active
+                        listCabangStr.add(cabangTersimpan)
                     }
                 }
 
@@ -164,7 +194,7 @@ class ModPegawaiActivity : AppCompatActivity() {
         } else {
             val pegawaiBaru = pegawaiRef.push()
             val pegawaiId = pegawaiBaru.key ?: run {
-                Toast.makeText(this, "Gagal generate ID, cek koneksi", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "Gagal generate ID", Toast.LENGTH_SHORT).show()
                 btnSimpan.isEnabled = true
                 return
             }
@@ -200,6 +230,7 @@ class ModPegawaiActivity : AppCompatActivity() {
         etAlamatPegawai = findViewById(R.id.etAlamatPegawai)
         spinnerStatus = findViewById(R.id.spinnerStatus)
         btnSimpan = findViewById(R.id.btnSimpan)
+        btnHapus = findViewById(R.id.btnHapus)
     }
 
     private fun setupSpinners() {

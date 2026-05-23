@@ -7,8 +7,10 @@ import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
+import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
-import androidx.cardview.widget.CardView
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import com.bumptech.glide.Glide
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
@@ -21,35 +23,47 @@ class Profile : AppCompatActivity() {
     private lateinit var auth: FirebaseAuth
     private lateinit var database: FirebaseDatabase
 
-    lateinit var imgProfil: ImageView
-    lateinit var tvNama: TextView
-    lateinit var tvEmail: TextView
-    lateinit var tvNamaDetail: TextView
-    lateinit var tvEmailDetail: TextView
-    lateinit var btnEditProfil: Button
-    lateinit var btnLogin: Button
-    lateinit var btnLogout: Button
-    lateinit var btnBack: ImageView
-    lateinit var btnEditFoto: CardView
+    private lateinit var imgProfil: ImageView
+    private lateinit var tvNama: TextView
+    private lateinit var tvEmail: TextView
+    private lateinit var tvNamaDetail: TextView
+    private lateinit var tvEmailDetail: TextView
+    private lateinit var btnEditProfil: Button
+    private lateinit var btnLogin: Button
+    private lateinit var btnLogout: Button
+    private lateinit var btnBack: ImageView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        enableEdgeToEdge()
         setContentView(R.layout.activity_profile)
 
-        auth     = FirebaseAuth.getInstance()
+        auth = FirebaseAuth.getInstance()
         database = FirebaseDatabase.getInstance()
 
         init()
-
-        val currentUser = auth.currentUser
-
-        if (currentUser == null) {
-            showGuestMode()
-        } else {
-            showLoginMode()
-            loadUserData(currentUser.uid)
+        setupListeners()
+        
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
+            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
+            insets
         }
+    }
 
+    private fun init() {
+        imgProfil     = findViewById(R.id.imgProfil)
+        tvNama        = findViewById(R.id.tvNama)
+        tvEmail       = findViewById(R.id.tvEmail)
+        tvNamaDetail  = findViewById(R.id.tvNamaDetail)
+        tvEmailDetail = findViewById(R.id.tvEmailDetail)
+        btnEditProfil = findViewById(R.id.btnEditProfil)
+        btnLogin      = findViewById(R.id.btnLogin)
+        btnLogout     = findViewById(R.id.btnLogout)
+        btnBack       = findViewById(R.id.btnBack)
+    }
+
+    private fun setupListeners() {
         btnBack.setOnClickListener {
             finish()
         }
@@ -71,23 +85,6 @@ class Profile : AppCompatActivity() {
         btnEditProfil.setOnClickListener {
             startActivity(Intent(this, EditProfile::class.java))
         }
-
-        btnEditFoto.setOnClickListener {
-            startActivity(Intent(this, EditProfile::class.java))
-        }
-    }
-
-    fun init() {
-        imgProfil     = findViewById(R.id.imgProfil)
-        tvNama        = findViewById(R.id.tvNama)
-        tvEmail       = findViewById(R.id.tvEmail)
-        tvNamaDetail  = findViewById(R.id.tvNamaDetail)
-        tvEmailDetail = findViewById(R.id.tvEmailDetail)
-        btnEditProfil = findViewById(R.id.btnEditProfil)
-        btnLogin      = findViewById(R.id.btnLogin)
-        btnLogout     = findViewById(R.id.btnLogout)
-        btnBack       = findViewById(R.id.btnBack)
-        btnEditFoto   = findViewById(R.id.btnEditFoto)
     }
 
     private fun showGuestMode() {
@@ -95,21 +92,33 @@ class Profile : AppCompatActivity() {
         tvEmail.text       = "-"
         tvNamaDetail.text  = "Guest"
         tvEmailDetail.text = "-"
+        
         btnEditProfil.visibility = View.GONE
-        btnEditFoto.visibility   = View.GONE
         btnLogout.visibility     = View.GONE
         btnLogin.visibility      = View.VISIBLE
+        
+        Glide.with(this)
+            .load(R.drawable.profil)
+            .circleCrop()
+            .into(imgProfil)
     }
 
     private fun showLoginMode() {
         btnLogin.visibility      = View.GONE
         btnEditProfil.visibility = View.VISIBLE
-        btnEditFoto.visibility   = View.VISIBLE
         btnLogout.visibility     = View.VISIBLE
     }
 
-    private fun loadUserData(uid: String) {
-        database.reference.child("users").child(uid)
+    private fun loadUserData() {
+        val currentUser = auth.currentUser
+        if (currentUser == null) {
+            showGuestMode()
+            return
+        }
+
+        showLoginMode()
+        
+        database.reference.child("users").child(currentUser.uid)
             .addListenerForSingleValueEvent(object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
                     val nama    = snapshot.child("nama").getValue(String::class.java) ?: "User"
@@ -128,6 +137,11 @@ class Profile : AppCompatActivity() {
                             .error(R.drawable.profil)
                             .circleCrop()
                             .into(imgProfil)
+                    } else {
+                        Glide.with(this@Profile)
+                            .load(R.drawable.profil)
+                            .circleCrop()
+                            .into(imgProfil)
                     }
                 }
 
@@ -139,9 +153,6 @@ class Profile : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
-        val currentUser = auth.currentUser
-        if (currentUser != null) {
-            loadUserData(currentUser.uid)
-        }
+        loadUserData()
     }
 }
