@@ -22,20 +22,26 @@ import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
+import java.text.NumberFormat
+import java.util.Locale
 
 class MainActivity : AppCompatActivity() {
 
-    lateinit var cardMoney: CardView
-    lateinit var cardTransaksi: CardView
-    lateinit var cardPegawai: CardView
-    lateinit var cardLaporan: CardView
-    lateinit var cardProduk: CardView
-    lateinit var cardKategori: CardView
-    lateinit var cardCabang: CardView
-    lateinit var cardPrinter: CardView
-    lateinit var cardProfile: CardView
+    private lateinit var cardMoney: CardView
+    private lateinit var cardTransaksi: CardView
+    private lateinit var cardPegawai: CardView
+    private lateinit var cardLaporan: CardView
+    private lateinit var cardProduk: CardView
+    private lateinit var cardKategori: CardView
+    private lateinit var cardCabang: CardView
+    private lateinit var cardPrinter: CardView
+    private lateinit var cardProfile: CardView
 
-    lateinit var tvNamaCard: TextView
+    private lateinit var tvNamaHeader: TextView
+    private lateinit var tvNamaCard: TextView
+    private lateinit var tvRupiah: TextView
+    private lateinit var fotoProfil: ImageView
+    private lateinit var fotoProfilCard: ImageView
 
     private lateinit var auth: FirebaseAuth
     private lateinit var database: FirebaseDatabase
@@ -49,11 +55,38 @@ class MainActivity : AppCompatActivity() {
         database = FirebaseDatabase.getInstance()
 
         init()
+        setupListeners()
         loadUserData()
+        loadTotalPendapatan()
 
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
+            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
+            insets
+        }
+    }
+
+    private fun init() {
+        cardMoney     = findViewById(R.id.cardMoney)
+        cardTransaksi = findViewById(R.id.cardTransaksi)
+        cardPegawai   = findViewById(R.id.cardPegawai)
+        cardLaporan   = findViewById(R.id.cardLaporan)
+        cardProduk    = findViewById(R.id.cardProduk)
+        cardCabang    = findViewById(R.id.cardCabang)
+        cardPrinter   = findViewById(R.id.cardPrinter)
+        cardProfile   = findViewById(R.id.cardProfile)
+        cardKategori  = findViewById(R.id.cardKategori)
+
+        tvNamaHeader   = findViewById(R.id.tvNamaHeader)
+        tvNamaCard     = findViewById(R.id.tvNamaCard)
+        tvRupiah       = findViewById(R.id.Rupiah)
+        fotoProfil     = findViewById(R.id.FotoProfil)
+        fotoProfilCard = findViewById(R.id.FotoProfilCard)
+    }
+
+    private fun setupListeners() {
         cardKategori.setOnClickListener {
             val intent = Intent(this, DataKategoriActivity::class.java)
-            intent.putExtra("menu", "Kategori")
             startActivity(intent)
         }
 
@@ -80,35 +113,16 @@ class MainActivity : AppCompatActivity() {
             startActivity(Intent(this, RiwayatTransaksiActivity::class.java))
         }
 
-        // Klik profile → buka ProfileActivity, bukan langsung logout
         cardProfile.setOnClickListener {
             startActivity(Intent(this, Profile::class.java))
         }
-
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
-            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
-            insets
-        }
-    }
-
-    fun init() {
-        cardMoney     = findViewById(R.id.cardMoney)
-        cardTransaksi = findViewById(R.id.cardTransaksi)
-        cardPegawai   = findViewById(R.id.cardPegawai)
-        cardLaporan   = findViewById(R.id.cardLaporan)
-        cardProduk    = findViewById(R.id.cardProduk)
-        cardCabang    = findViewById(R.id.cardCabang)
-        cardPrinter   = findViewById(R.id.cardPrinter)
-        cardProfile   = findViewById(R.id.cardProfile)
-        cardKategori  = findViewById(R.id.cardKategori)
-        tvNamaCard    = findViewById(R.id.tvNamaCard)
     }
 
     private fun loadUserData() {
         val currentUser = auth.currentUser
 
         if (currentUser == null) {
+            tvNamaHeader.text = "Guest"
             tvNamaCard.text = "Guest"
             return
         }
@@ -119,6 +133,7 @@ class MainActivity : AppCompatActivity() {
                     val nama    = snapshot.child("nama").getValue(String::class.java) ?: "User"
                     val fotoUrl = snapshot.child("fotoProfil").getValue(String::class.java)
 
+                    tvNamaHeader.text = nama
                     tvNamaCard.text = nama
 
                     if (!fotoUrl.isNullOrEmpty()) {
@@ -127,14 +142,14 @@ class MainActivity : AppCompatActivity() {
                             .placeholder(R.drawable.profil)
                             .error(R.drawable.profil)
                             .circleCrop()
-                            .into(findViewById(R.id.FotoProfil))
+                            .into(fotoProfil)
 
                         Glide.with(this@MainActivity)
                             .load(fotoUrl)
-                            .placeholder(R.drawable.jokowi)
-                            .error(R.drawable.jokowi)
+                            .placeholder(R.drawable.profil)
+                            .error(R.drawable.profil)
                             .circleCrop()
-                            .into(findViewById(R.id.FotoProfilCard))
+                            .into(fotoProfilCard)
                     }
                 }
 
@@ -148,8 +163,33 @@ class MainActivity : AppCompatActivity() {
             })
     }
 
+    private fun loadTotalPendapatan() {
+        database.reference.child("transaksi").addValueEventListener(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                var total: Long = 0
+                for (transaksiSnapshot in snapshot.children) {
+                    val totalHarga = transaksiSnapshot.child("totalHarga").getValue(Long::class.java) ?: 0L
+                    total += totalHarga
+                }
+                
+                val formatRupiah = NumberFormat.getNumberInstance(Locale("id", "ID"))
+                tvRupiah.text = "Rp ${formatRupiah.format(total)}"
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                Toast.makeText(
+                    this@MainActivity,
+                    "Gagal memuat total pendapatan: ${error.message}",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+        })
+    }
+
     override fun onResume() {
         super.onResume()
         loadUserData()
+        // loadTotalPendapatan() is already attached as a listener that updates automatically
+        // but we can ensure user data refreshes if they edited their profile
     }
 }
