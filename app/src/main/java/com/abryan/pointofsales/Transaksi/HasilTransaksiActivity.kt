@@ -2,16 +2,21 @@ package com.abryan.pointofsales.Transaksi
 
 import android.content.Intent
 import android.os.Bundle
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
-import androidx.cardview.widget.CardView
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.abryan.pointofsales.R
 import com.abryan.pointofsales.model.ModelTransaksi
+import com.abryan.pointofsales.model.ModelItemTransaksi
 import java.text.NumberFormat
 import java.util.Locale
 import android.Manifest
@@ -20,19 +25,35 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.dantsu.escposprinter.EscPosPrinter
 import com.dantsu.escposprinter.connection.bluetooth.BluetoothPrintersConnections
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.FirebaseDatabase
 
 class HasilTransaksiActivity : AppCompatActivity() {
 
     private lateinit var tvStrukToko: TextView
+    private lateinit var tvAlamatToko: TextView
+    private lateinit var tvIdTransaksi: TextView
     private lateinit var tvStrukTanggalWaktu: TextView
-    private lateinit var tvStrukItems: TextView
+    private lateinit var tvNamaKasir: TextView
+    private lateinit var tvHpKasir: TextView
+    private lateinit var rvStrukItems: RecyclerView
+    private lateinit var tvStrukSubtotal: TextView
+    private lateinit var tvStrukPpn: TextView
     private lateinit var tvStrukTotal: TextView
+    private lateinit var tvStrukBayar: TextView
+    private lateinit var tvStrukKembalian: TextView
+    private lateinit var tvStrukContact: TextView
     private lateinit var btnPrint: Button
-    private lateinit var btnSelesai: Button
     private lateinit var btnTransaksiBaru: Button
-    private lateinit var cardBack: CardView
 
     private var transaksi: ModelTransaksi? = null
+
+    private val database = FirebaseDatabase.getInstance()
+    private val auth = FirebaseAuth.getInstance()
+
+    private var alamatToko = "Jl. Contoh No. 1, Kota Anda"
+    private var namaKasir = "Kasir Default"
+    private var nomorHpKasir = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -41,16 +62,14 @@ class HasilTransaksiActivity : AppCompatActivity() {
 
         init()
 
-        transaksi = intent.getSerializableExtra("transaksi") as? ModelTransaksi
+        val partialTransaksi = intent.getSerializableExtra("transaksi") as? ModelTransaksi
 
-        if (transaksi != null) {
-            tampilkanStruk()
+        if (partialTransaksi != null) {
+            loadSettingsAndCashier(partialTransaksi)
         } else {
             Toast.makeText(this, "Data transaksi tidak ditemukan", Toast.LENGTH_SHORT).show()
             finish()
         }
-
-        btnSelesai.setOnClickListener { finish() }
 
         btnTransaksiBaru.setOnClickListener {
             val intent = Intent(this, TransaksiActivity::class.java)
@@ -72,30 +91,139 @@ class HasilTransaksiActivity : AppCompatActivity() {
 
     private fun init() {
         tvStrukToko = findViewById(R.id.tvStrukToko)
+        tvAlamatToko = findViewById(R.id.tvAlamatToko)
+        tvIdTransaksi = findViewById(R.id.tvIdTransaksi)
         tvStrukTanggalWaktu = findViewById(R.id.tvStrukTanggalWaktu)
-        tvStrukItems = findViewById(R.id.tvStrukItems)
+        tvNamaKasir = findViewById(R.id.tvNamaKasir)
+        tvHpKasir = findViewById(R.id.tvHpKasir)
+        rvStrukItems = findViewById(R.id.rvStrukItems)
+        tvStrukSubtotal = findViewById(R.id.tvStrukSubtotal)
+        tvStrukPpn = findViewById(R.id.tvStrukPpn)
         tvStrukTotal = findViewById(R.id.tvStrukTotal)
+        tvStrukBayar = findViewById(R.id.tvStrukBayar)
+        tvStrukKembalian = findViewById(R.id.tvStrukKembalian)
+        tvStrukContact = findViewById(R.id.tvStrukContact)
         btnPrint = findViewById(R.id.btnPrint)
-        btnSelesai = findViewById(R.id.btnSelesai)
         btnTransaksiBaru = findViewById(R.id.btnTransaksiBaru)
-        cardBack = findViewById(R.id.cardBack)
-        
-        cardBack.setOnClickListener { finish() }
+    }
+
+    private fun loadSettingsAndCashier(partial: ModelTransaksi) {
+        // Load settings/alamatToko
+        database.getReference("settings").child("alamatToko").get()
+            .addOnSuccessListener { snapshot ->
+                snapshot.getValue(String::class.java)?.let {
+                    alamatToko = it
+                    tvAlamatToko.text = it
+                }
+            }
+
+        val uid = auth.currentUser?.uid
+        if (uid != null) {
+            // Cek di pegawai berdasarkan idPegawai == uid
+            database.getReference("pegawai").orderByChild("idPegawai").equalTo(uid).get()
+                .addOnSuccessListener { snapshot ->
+                    var found = false
+                    for (child in snapshot.children) {
+                        val peg = child.getValue(com.abryan.pointofsales.model.ModelPegawai::class.java)
+                        if (peg != null) {
+                            namaKasir = peg.namaPegawai ?: ""
+                            nomorHpKasir = peg.nomorHp ?: ""
+                            found = true
+                            break
+                        }
+                    }
+                    if (found) {
+                        finalizeTransaction(partial)
+                    } else {
+                        // Cari berdasarkan nama dari users/{uid}/nama
+                        database.getReference("users").child(uid).child("nama").get()
+                            .addOnSuccessListener { userSnapshot ->
+                                val nameFromUser = userSnapshot.getValue(String::class.java)
+                                if (!nameFromUser.isNullOrEmpty()) {
+                                    namaKasir = nameFromUser
+                                    // Cari di pegawai berdasarkan namaPegawai untuk mendapatkan HP
+                                    database.getReference("pegawai").orderByChild("namaPegawai").equalTo(nameFromUser).get()
+                                        .addOnSuccessListener { pegSnapshot ->
+                                            for (child in pegSnapshot.children) {
+                                                val peg = child.getValue(com.abryan.pointofsales.model.ModelPegawai::class.java)
+                                                if (peg != null) {
+                                                    nomorHpKasir = peg.nomorHp ?: ""
+                                                    break
+                                                }
+                                            }
+                                            finalizeTransaction(partial)
+                                        }
+                                        .addOnFailureListener {
+                                            finalizeTransaction(partial)
+                                        }
+                                } else {
+                                    finalizeTransaction(partial)
+                                }
+                            }
+                            .addOnFailureListener {
+                                finalizeTransaction(partial)
+                            }
+                    }
+                }
+                .addOnFailureListener {
+                    finalizeTransaction(partial)
+                }
+        } else {
+            finalizeTransaction(partial)
+        }
+    }
+
+    private fun finalizeTransaction(partial: ModelTransaksi) {
+        val timestamp = System.currentTimeMillis() / 1000
+        val finalId = "TRX_$timestamp"
+
+        val finalTransaksi = partial.copy(
+            idTransaksi = finalId,
+            namaKasir = namaKasir,
+            nomorKasir = nomorHpKasir
+        )
+        transaksi = finalTransaksi
+
+        // Simpan ke Firebase "transaksi"
+        database.getReference("transaksi").child(finalId).setValue(finalTransaksi)
+            .addOnSuccessListener {
+                Toast.makeText(this, "Transaksi Berhasil Disimpan", Toast.LENGTH_SHORT).show()
+                // Kurangi stok di Firebase untuk masing-masing item
+                for (item in finalTransaksi.listItem) {
+                    val produkId = item.idProduk
+                    val qty = item.jumlah
+                    val stokRef = database.getReference("Produk").child(produkId).child("stok")
+                    stokRef.get().addOnSuccessListener { productSnapshot ->
+                        val currentStok = productSnapshot.getValue(Int::class.java) ?: 0
+                        stokRef.setValue((currentStok - qty).coerceAtLeast(0))
+                    }
+                }
+            }
+            .addOnFailureListener { e ->
+                Toast.makeText(this, "Gagal menyimpan transaksi: ${e.message}", Toast.LENGTH_LONG).show()
+            }
+
+        tampilkanStruk()
     }
 
     private fun tampilkanStruk() {
         transaksi?.let { data ->
-            tvStrukTanggalWaktu.text = "Tanggal: ${data.tanggal} | Waktu: ${data.waktu}"
+            tvIdTransaksi.text = "#TRX-${data.idTransaksi.takeLast(8)}"
+            tvStrukTanggalWaktu.text = "${data.tanggal} | ${data.waktu}"
+            tvNamaKasir.text = data.namaKasir
+            tvHpKasir.text = if (data.nomorKasir.isNotEmpty()) data.nomorKasir else "-"
+            tvStrukContact.text = "Contact: ${if (data.nomorKasir.isNotEmpty()) data.nomorKasir else "-"}"
 
             val formatRp = NumberFormat.getNumberInstance(Locale("id", "ID"))
-            val itemStr = StringBuilder()
+            tvStrukSubtotal.text = "Rp " + formatRp.format(data.totalHarga)
+            tvStrukPpn.text = "Rp " + formatRp.format(data.ppn)
+            tvStrukTotal.text = "Rp " + formatRp.format(data.totalSetelahPpn)
+            tvStrukBayar.text = "Rp " + formatRp.format(data.nominalBayar)
+            tvStrukKembalian.text = "Rp " + formatRp.format(data.kembalian)
 
-            for (item in data.listItem) {
-                itemStr.append("${item.namaProduk}\n")
-                itemStr.append("${item.jumlah} x Rp ${formatRp.format(item.harga)} = Rp ${formatRp.format(item.subtotal)}\n\n")
-            }
-            tvStrukItems.text = itemStr.toString().trim()
-            tvStrukTotal.text = "Rp " + formatRp.format(data.totalHarga)
+            // Setup RecyclerView
+            rvStrukItems.layoutManager = LinearLayoutManager(this)
+            rvStrukItems.adapter = StrukItemAdapter(data.listItem)
         }
     }
 
@@ -137,9 +265,15 @@ class HasilTransaksiActivity : AppCompatActivity() {
                     val formatRp = NumberFormat.getNumberInstance(Locale("id", "ID"))
                     
                     val textToPrint = StringBuilder()
-                    textToPrint.append("[C]<b>TOKO ABRYAN</b>\n")
+                    textToPrint.append("[C]<b>Point Of Sales</b>\n")
+                    textToPrint.append("[C]${alamatToko}\n")
                     textToPrint.append("[C]================================\n")
+                    textToPrint.append("[L]ID: #TRX-${data.idTransaksi.takeLast(8)}\n")
                     textToPrint.append("[L]Tgl: ${data.tanggal} [R]Jam: ${data.waktu}\n")
+                    textToPrint.append("[L]Kasir: ${data.namaKasir}\n")
+                    if (data.nomorKasir.isNotEmpty()) {
+                        textToPrint.append("[L]HP Kasir: ${data.nomorKasir}\n")
+                    }
                     textToPrint.append("[C]================================\n")
                     
                     for (item in data.listItem) {
@@ -148,9 +282,14 @@ class HasilTransaksiActivity : AppCompatActivity() {
                     }
                     
                     textToPrint.append("[C]================================\n")
-                    textToPrint.append("[L]<b>TOTAL</b> [R]<b>Rp ${formatRp.format(data.totalHarga)}</b>\n")
+                    textToPrint.append("[L]Subtotal [R]Rp ${formatRp.format(data.totalHarga)}\n")
+                    textToPrint.append("[L]PPN (11%) [R]Rp ${formatRp.format(data.ppn)}\n")
+                    textToPrint.append("[L]<b>TOTAL</b> [R]<b>Rp ${formatRp.format(data.totalSetelahPpn)}</b>\n")
+                    textToPrint.append("[L]Bayar [R]Rp ${formatRp.format(data.nominalBayar)}\n")
+                    textToPrint.append("[L]Kembalian [R]Rp ${formatRp.format(data.kembalian)}\n")
                     textToPrint.append("[C]================================\n")
-                    textToPrint.append("[C]Terima Kasih\n")
+                    textToPrint.append("[C]Terima kasih telah berbelanja di Point Of Sales!\n")
+                    textToPrint.append("[C]Sampai jumpa kembali 😊\n")
                     
                     printer.printFormattedText(textToPrint.toString())
                     printer.disconnectPrinter()
@@ -161,6 +300,29 @@ class HasilTransaksiActivity : AppCompatActivity() {
             } catch (e: Exception) {
                 Toast.makeText(this, "Gagal nge-print: ${e.message}", Toast.LENGTH_LONG).show()
             }
+        }
+    }
+
+    private class StrukItemAdapter(private val list: List<ModelItemTransaksi>) : RecyclerView.Adapter<StrukItemAdapter.ViewHolder>() {
+        class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+            val tvNamaItem: TextView = view.findViewById(R.id.tvNamaItem)
+            val tvJumlahHarga: TextView = view.findViewById(R.id.tvJumlahHarga)
+            val tvSubtotalItem: TextView = view.findViewById(R.id.tvSubtotalItem)
+        }
+
+        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
+            val v = LayoutInflater.from(parent.context).inflate(R.layout.item_struk_produk, parent, false)
+            return ViewHolder(v)
+        }
+
+        override fun getItemCount(): Int = list.size
+
+        override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+            val item = list[position]
+            holder.tvNamaItem.text = item.namaProduk
+            val formatRp = NumberFormat.getNumberInstance(Locale("id", "ID"))
+            holder.tvJumlahHarga.text = "${item.jumlah} x Rp ${formatRp.format(item.harga)}"
+            holder.tvSubtotalItem.text = "Rp ${formatRp.format(item.subtotal)}"
         }
     }
 }

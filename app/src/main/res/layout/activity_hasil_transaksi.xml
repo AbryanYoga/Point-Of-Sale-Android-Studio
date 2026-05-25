@@ -6,11 +6,12 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".Transaksi.HasilTransaksiActivity"
-    android:background="#EAEBFF">
+    android:background="#1A1A2E">
 
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="0dp"
+        android:fillViewport="true"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toTopOf="@id/cardBottomControls">
 
@@ -19,13 +20,14 @@
             android:layout_height="wrap_content"
             android:padding="20dp">
 
-            <androidx.cardview.widget.CardView
+            <com.google.android.material.card.MaterialCardView
                 android:id="@+id/cardStruk"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:cardCornerRadius="12dp"
+                app:cardCornerRadius="16dp"
                 app:cardElevation="4dp"
-                android:backgroundTint="#FFFFFF"
+                app:cardBackgroundColor="#FFFFFF"
+                app:strokeWidth="0dp"
                 app:layout_constraintTop_toTopOf="parent">
 
                 <androidx.constraintlayout.widget.ConstraintLayout
@@ -33,156 +35,366 @@
                     android:layout_height="wrap_content"
                     android:padding="24dp">
 
+                    <ImageView
+                        android:id="@+id/imgLogo"
+                        android:layout_width="60dp"
+                        android:layout_height="60dp"
+                        android:src="@drawable/logo"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
                     <TextView
                         android:id="@+id/tvStrukToko"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="12dp"
+                        android:text="Point Of Sales"
+                        android:textColor="#000000"
+                        android:textSize="20sp"
+                        android:textStyle="bold"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/imgLogo" />
+
+                    <TextView
+                        android:id="@+id/tvAlamatToko"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp"
+                        android:text="Jl. Contoh No. 1, Kota Anda"
+                        android:textColor="#555555"
+                        android:textSize="12sp"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/tvStrukToko" />
+
+                    <TextView
+                        android:id="@+id/separator1"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="TOKO ABRYAN"
+                        android:layout_marginTop="16dp"
                         android:gravity="center"
-                        android:textStyle="bold"
-                        android:textSize="22sp"
+                        android:text="- - - - - - - - - - - - - - - - - - - - - - - - - - - - - -"
+                        android:textColor="#555555"
+                        android:textSize="12sp"
+                        app:layout_constraintTop_toBottomOf="@id/tvAlamatToko" />
+
+                    <TextView
+                        android:id="@+id/tvLabelIdTransaksi"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="16dp"
+                        android:text="ID Transaksi"
+                        android:textColor="#555555"
+                        android:textSize="13sp"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/separator1" />
+
+                    <TextView
+                        android:id="@+id/tvIdTransaksi"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="#TRX-00000000"
                         android:textColor="#000000"
-                        app:layout_constraintTop_toTopOf="parent"/>
+                        android:textSize="13sp"
+                        android:textStyle="bold"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="@id/tvLabelIdTransaksi" />
+
+                    <TextView
+                        android:id="@+id/tvLabelTanggal"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:text="Tanggal &amp; Waktu"
+                        android:textColor="#555555"
+                        android:textSize="13sp"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/tvLabelIdTransaksi" />
 
                     <TextView
                         android:id="@+id/tvStrukTanggalWaktu"
-                        android:layout_width="match_parent"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Tanggal: - | Waktu: -"
-                        android:gravity="center"
-                        android:textSize="12sp"
-                        android:textColor="#555555"
-                        android:layout_marginTop="8dp"
-                        app:layout_constraintTop_toBottomOf="@id/tvStrukToko"/>
-
-                    <View
-                        android:id="@+id/line1"
-                        android:layout_width="match_parent"
-                        android:layout_height="1dp"
-                        android:background="#DDDDDD"
-                        android:layout_marginTop="16dp"
-                        app:layout_constraintTop_toBottomOf="@id/tvStrukTanggalWaktu"/>
+                        android:text="-"
+                        android:textColor="#000000"
+                        android:textSize="13sp"
+                        android:textStyle="bold"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="@id/tvLabelTanggal" />
 
                     <TextView
-                        android:id="@+id/tvStrukItems"
+                        android:id="@+id/tvLabelKasir"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:text="Kasir Bertugas"
+                        android:textColor="#555555"
+                        android:textSize="13sp"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/tvLabelTanggal" />
+
+                    <TextView
+                        android:id="@+id/tvNamaKasir"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="-"
+                        android:textColor="#000000"
+                        android:textSize="13sp"
+                        android:textStyle="bold"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="@id/tvLabelKasir" />
+
+                    <TextView
+                        android:id="@+id/tvLabelHpKasir"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:text="Nomor HP Kasir"
+                        android:textColor="#555555"
+                        android:textSize="13sp"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/tvLabelKasir" />
+
+                    <TextView
+                        android:id="@+id/tvHpKasir"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="-"
+                        android:textColor="#000000"
+                        android:textSize="13sp"
+                        android:textStyle="bold"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="@id/tvLabelHpKasir" />
+
+                    <TextView
+                        android:id="@+id/separator2"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="Item 1 x 2 = Rp 20.000\nItem 2 x 1 = Rp 15.000"
-                        android:textColor="#000000"
-                        android:textSize="14sp"
-                        android:fontFamily="monospace"
                         android:layout_marginTop="16dp"
-                        app:layout_constraintTop_toBottomOf="@id/line1"/>
+                        android:gravity="center"
+                        android:text="- - - - - - - - - - - - - - - - - - - - - - - - - - - - - -"
+                        android:textColor="#555555"
+                        android:textSize="12sp"
+                        app:layout_constraintTop_toBottomOf="@id/tvLabelHpKasir" />
 
-                    <View
-                        android:id="@+id/line2"
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/rvStrukItems"
                         android:layout_width="match_parent"
-                        android:layout_height="1dp"
-                        android:background="#DDDDDD"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="12dp"
+                        app:layout_constraintTop_toBottomOf="@id/separator2"
+                        tools:listitem="@layout/item_struk_produk" />
+
+                    <TextView
+                        android:id="@+id/separator3"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="12dp"
+                        android:gravity="center"
+                        android:text="- - - - - - - - - - - - - - - - - - - - - - - - - - - - - -"
+                        android:textColor="#555555"
+                        android:textSize="12sp"
+                        app:layout_constraintTop_toBottomOf="@id/rvStrukItems" />
+
+                    <TextView
+                        android:id="@+id/tvLabelSubtotal"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
                         android:layout_marginTop="16dp"
-                        app:layout_constraintTop_toBottomOf="@id/tvStrukItems"/>
+                        android:text="Subtotal"
+                        android:textColor="#555555"
+                        android:textSize="13sp"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/separator3" />
+
+                    <TextView
+                        android:id="@+id/tvStrukSubtotal"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Rp 0"
+                        android:textColor="#000000"
+                        android:textSize="13sp"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="@id/tvLabelSubtotal" />
+
+                    <TextView
+                        android:id="@+id/tvLabelPpn"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:text="PPN (11%)"
+                        android:textColor="#555555"
+                        android:textSize="13sp"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/tvLabelSubtotal" />
+
+                    <TextView
+                        android:id="@+id/tvStrukPpn"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Rp 0"
+                        android:textColor="#000000"
+                        android:textSize="13sp"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="@id/tvLabelPpn" />
 
                     <TextView
                         android:id="@+id/tvLabelTotal"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="TOTAL"
-                        android:textStyle="bold"
+                        android:layout_marginTop="12dp"
+                        android:text="Total"
                         android:textColor="#000000"
                         android:textSize="16sp"
-                        android:layout_marginTop="16dp"
+                        android:textStyle="bold"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@id/line2"/>
+                        app:layout_constraintTop_toBottomOf="@id/tvLabelPpn" />
 
                     <TextView
                         android:id="@+id/tvStrukTotal"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Rp 0"
-                        android:textStyle="bold"
                         android:textColor="#000000"
                         android:textSize="18sp"
-                        android:layout_marginTop="16dp"
+                        android:textStyle="bold"
                         app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintTop_toBottomOf="@id/line2"/>
+                        app:layout_constraintTop_toTopOf="@id/tvLabelTotal" />
+
+                    <TextView
+                        android:id="@+id/tvLabelBayar"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:text="Nominal Bayar"
+                        android:textColor="#555555"
+                        android:textSize="13sp"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/tvLabelTotal" />
+
+                    <TextView
+                        android:id="@+id/tvStrukBayar"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Rp 0"
+                        android:textColor="#000000"
+                        android:textSize="13sp"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="@id/tvLabelBayar" />
+
+                    <TextView
+                        android:id="@+id/tvLabelKembalian"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:text="Kembalian"
+                        android:textColor="#555555"
+                        android:textSize="13sp"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/tvLabelBayar" />
+
+                    <TextView
+                        android:id="@+id/tvStrukKembalian"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Rp 0"
+                        android:textColor="#4CAF50"
+                        android:textSize="14sp"
+                        android:textStyle="bold"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="@id/tvLabelKembalian" />
+
+                    <TextView
+                        android:id="@+id/separator4"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="16dp"
+                        android:gravity="center"
+                        android:text="- - - - - - - - - - - - - - - - - - - - - - - - - - - - - -"
+                        android:textColor="#555555"
+                        android:textSize="12sp"
+                        app:layout_constraintTop_toBottomOf="@id/tvLabelKembalian" />
 
                     <TextView
                         android:id="@+id/tvStrukFooter"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="Terima Kasih Atas Kunjungan Anda"
+                        android:layout_marginTop="16dp"
                         android:gravity="center"
-                        android:textSize="12sp"
+                        android:text="Terima kasih telah berbelanja di Point Of Sales!\nSampai jumpa kembali 😊"
                         android:textColor="#555555"
-                        android:layout_marginTop="24dp"
-                        app:layout_constraintTop_toBottomOf="@id/tvStrukTotal"/>
+                        android:textSize="12sp"
+                        app:layout_constraintTop_toBottomOf="@id/separator4" />
+
+                    <TextView
+                        android:id="@+id/tvStrukContact"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:gravity="center"
+                        android:text="Contact: -"
+                        android:textColor="#888888"
+                        android:textSize="11sp"
+                        app:layout_constraintTop_toBottomOf="@id/tvStrukFooter" />
 
                 </androidx.constraintlayout.widget.ConstraintLayout>
-            </androidx.cardview.widget.CardView>
+            </com.google.android.material.card.MaterialCardView>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>
 
-    <androidx.cardview.widget.CardView
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/cardBottomControls"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:backgroundTint="@color/CardDalam"
-        app:cardElevation="8dp"
+        android:background="#0D0D1A"
         app:layout_constraintBottom_toBottomOf="parent">
+
+        <View
+            android:id="@+id/borderTopControls"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="#0F3460"
+            app:layout_constraintTop_toTopOf="parent"/>
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="20dp">
+            android:padding="20dp"
+            app:layout_constraintTop_toBottomOf="@id/borderTopControls">
 
             <Button
                 android:id="@+id/btnPrint"
                 android:layout_width="0dp"
                 android:layout_height="56dp"
-                android:backgroundTint="#2196F3"
-                android:text="Print Bluetooth (ESC/POS)"
-                android:textColor="@color/white"
+                android:background="@drawable/bg_btn_proses"
+                app:backgroundTint="@null"
+                android:text="Print Struk"
+                android:textColor="#FFFFFF"
                 android:textSize="14sp"
                 android:textStyle="bold"
-                app:cornerRadius="16dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
-
-            <Button
-                android:id="@+id/btnSelesai"
-                android:layout_width="0dp"
-                android:layout_height="56dp"
-                android:layout_marginTop="12dp"
-                android:layout_marginEnd="8dp"
-                android:backgroundTint="@color/Kembali"
-                android:text="Selesai"
-                android:textColor="@color/textModkategori"
-                android:textSize="14sp"
-                android:textStyle="bold"
-                app:cornerRadius="16dp"
-                app:layout_constraintEnd_toStartOf="@id/btnTransaksiBaru"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/btnPrint" />
 
             <Button
                 android:id="@+id/btnTransaksiBaru"
                 android:layout_width="0dp"
                 android:layout_height="56dp"
                 android:layout_marginTop="12dp"
-                android:layout_marginStart="8dp"
-                android:backgroundTint="@color/TombolSimpan"
+                android:background="@drawable/bg_btn_secondary"
+                app:backgroundTint="@null"
                 android:text="Transaksi Baru"
-                android:textColor="@color/textModkategori"
+                android:textColor="#FFFFFF"
                 android:textSize="14sp"
                 android:textStyle="bold"
-                app:cornerRadius="16dp"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@id/btnSelesai"
+                app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/btnPrint" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
-    </androidx.cardview.widget.CardView>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

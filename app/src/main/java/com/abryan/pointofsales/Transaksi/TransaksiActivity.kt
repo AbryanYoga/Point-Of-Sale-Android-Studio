@@ -2,17 +2,23 @@ package com.abryan.pointofsales.Transaksi
 
 import android.content.Intent
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.widget.Button
+import android.widget.EditText
 import android.widget.ImageView
 import android.widget.SearchView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import android.graphics.Color
 import com.abryan.pointofsales.Adapter.TransaksiAdapter
 import com.abryan.pointofsales.R
 import com.abryan.pointofsales.model.ModelItemTransaksi
@@ -51,7 +57,9 @@ class TransaksiActivity : AppCompatActivity() {
 
         init()
 
-        rvProdukTransaksi.layoutManager = LinearLayoutManager(this)
+        val orientation = resources.configuration.orientation
+        val columns = if (orientation == android.content.res.Configuration.ORIENTATION_LANDSCAPE) 2 else 1
+        rvProdukTransaksi.layoutManager = GridLayoutManager(this, columns)
         adapter = TransaksiAdapter(filteredList) {
             hitungTotal()
         }
@@ -60,6 +68,11 @@ class TransaksiActivity : AppCompatActivity() {
         imageBack.setOnClickListener { finish() }
 
         loadProduk()
+
+        val searchEditTextId = searchProduk.context.resources.getIdentifier("android:id/search_src_text", null, null)
+        val searchEditText = searchProduk.findViewById<TextView>(searchEditTextId)
+        searchEditText?.setTextColor(Color.WHITE)
+        searchEditText?.setHintTextColor(Color.parseColor("#B0B0C0"))
 
         searchProduk.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String?): Boolean = false
@@ -144,10 +157,6 @@ class TransaksiActivity : AppCompatActivity() {
             return
         }
 
-        btnProsesTransaksi.isEnabled = false
-
-        val transaksiId = transaksiRef.push().key ?: return
-
         val sdfTanggal = SimpleDateFormat("dd/MM/yyyy", Locale("id", "ID"))
         val sdfWaktu = SimpleDateFormat("HH:mm:ss", Locale("id", "ID"))
         val currentDate = Date()
@@ -170,38 +179,103 @@ class TransaksiActivity : AppCompatActivity() {
                         namaProduk = produk.nama,
                         harga = produk.harga,
                         jumlah = jumlah,
-                        subtotal = subtotal
+                        subtotal = subtotal,
+                        imageUrl = produk.imageUrl
                     )
                 )
-                
-                // Kurangi stok
-                val newStok = produk.stok - jumlah
-                produkRef.child(produkId).child("stok").setValue(newStok)
             }
         }
 
-        val transaksi = ModelTransaksi(
-            idTransaksi = transaksiId,
-            tanggal = tanggal,
-            waktu = waktu,
-            totalHarga = totalHarga,
-            totalItem = totalQty,
-            cabang = "Pusat", // Default cabang if not specified
-            listItem = listItem,
-            statusTransaksi = "Selesai"
-        )
+        val ppn = (totalHarga * 0.11).toLong()
+        val totalSetelahPpn = totalHarga + ppn
 
-        transaksiRef.child(transaksiId).setValue(transaksi)
-            .addOnSuccessListener {
-                Toast.makeText(this, "Transaksi Berhasil", Toast.LENGTH_SHORT).show()
-                val intent = Intent(this, HasilTransaksiActivity::class.java)
-                intent.putExtra("transaksi", transaksi)
-                startActivity(intent)
-                finish()
+        showPaymentDialog(totalHarga, ppn, totalSetelahPpn, totalQty, tanggal, waktu, listItem)
+    }
+
+    private fun showPaymentDialog(
+        totalHarga: Long,
+        ppn: Long,
+        totalSetelahPpn: Long,
+        totalQty: Int,
+        tanggal: String,
+        waktu: String,
+        listItem: List<ModelItemTransaksi>
+    ) {
+        val dialogView = layoutInflater.inflate(R.layout.dialog_pembayaran, null)
+        val dialog = AlertDialog.Builder(this)
+            .setView(dialogView)
+            .create()
+
+        dialog.window?.setBackgroundDrawableResource(android.R.color.transparent)
+
+        val tvSubtotal = dialogView.findViewById<TextView>(R.id.tvSubtotal)
+        val tvPpn = dialogView.findViewById<TextView>(R.id.tvPpn)
+        val tvGrandTotal = dialogView.findViewById<TextView>(R.id.tvGrandTotal)
+        val etNominalBayar = dialogView.findViewById<EditText>(R.id.etNominalBayar)
+        val btnBatal = dialogView.findViewById<Button>(R.id.btnBatal)
+        val btnBayar = dialogView.findViewById<Button>(R.id.btnBayar)
+
+        val formatRp = NumberFormat.getNumberInstance(Locale("id", "ID"))
+        tvSubtotal.text = "Rp " + formatRp.format(totalHarga)
+        tvPpn.text = "Rp " + formatRp.format(ppn)
+        tvGrandTotal.text = "Rp " + formatRp.format(totalSetelahPpn)
+
+        etNominalBayar.addTextChangedListener(object : TextWatcher {
+            private var isEditing = false
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+            override fun afterTextChanged(s: Editable?) {
+                if (isEditing) return
+                isEditing = true
+                val input = s.toString().replace(".", "").replace(",", "")
+                if (input.isNotEmpty()) {
+                    val number = input.toLongOrNull() ?: 0L
+                    val formatted = formatRp.format(number)
+                    etNominalBayar.setText(formatted)
+                    etNominalBayar.setSelection(formatted.length)
+                }
+                isEditing = false
             }
-            .addOnFailureListener { error ->
-                btnProsesTransaksi.isEnabled = true
-                Toast.makeText(this, "Gagal: ${error.message}", Toast.LENGTH_SHORT).show()
+        })
+
+        btnBatal.setOnClickListener {
+            dialog.dismiss()
+        }
+
+        btnBayar.setOnClickListener {
+            val nominalStr = etNominalBayar.text.toString().replace(".", "").replace(",", "")
+            val nominalVal = nominalStr.toLongOrNull() ?: 0L
+
+            if (nominalVal < totalSetelahPpn) {
+                etNominalBayar.error = "Uang pembayaran kurang!"
+                etNominalBayar.requestFocus()
+                return@setOnClickListener
             }
+
+            val kembalian = nominalVal - totalSetelahPpn
+
+            val transaksi = ModelTransaksi(
+                idTransaksi = "", // Akan di-generate di HasilTransaksiActivity
+                tanggal = tanggal,
+                waktu = waktu,
+                totalHarga = totalHarga,
+                ppn = ppn,
+                totalSetelahPpn = totalSetelahPpn,
+                nominalBayar = nominalVal,
+                kembalian = kembalian,
+                totalItem = totalQty,
+                cabang = "Pusat",
+                listItem = listItem,
+                statusTransaksi = "Selesai"
+            )
+
+            val intent = Intent(this@TransaksiActivity, HasilTransaksiActivity::class.java)
+            intent.putExtra("transaksi", transaksi)
+            startActivity(intent)
+            dialog.dismiss()
+            finish()
+        }
+
+        dialog.show()
     }
 }

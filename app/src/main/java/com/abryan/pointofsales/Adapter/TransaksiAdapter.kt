@@ -9,6 +9,7 @@ import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.RecyclerView
 import com.abryan.pointofsales.R
 import com.abryan.pointofsales.model.ModelProduk
+import com.bumptech.glide.Glide
 import java.text.NumberFormat
 import java.util.Locale
 
@@ -27,6 +28,7 @@ class TransaksiAdapter(
         val btnPlus: CardView = itemView.findViewById(R.id.btnPlus)
         val btnMinus: CardView = itemView.findViewById(R.id.btnMinus)
         val cardItemProduk: View = itemView.findViewById(R.id.cardItemProduk)
+        val imgProdukTransaksi: android.widget.ImageView = itemView.findViewById(R.id.imgProdukTransaksi)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -46,6 +48,12 @@ class TransaksiAdapter(
         holder.tvHargaProduk.text = "Rp " + formatRp.format(produk.harga)
         
         holder.tvStokProduk.text = "Stok: ${produk.stok}"
+
+        Glide.with(holder.itemView.context)
+            .load(produk.imageUrl.takeIf { it.isNotEmpty() })
+            .placeholder(R.drawable.produk)
+            .error(R.drawable.produk)
+            .into(holder.imgProdukTransaksi)
 
         val produkId = produk.id
         var jumlah = selectedItems[produkId] ?: 0
@@ -79,10 +87,11 @@ class TransaksiAdapter(
     }
 
     private fun updateCardColor(card: View, jumlah: Int) {
+        val cardView = card as? com.google.android.material.card.MaterialCardView
         if (jumlah > 0) {
-            card.setBackgroundColor(Color.parseColor("#E8F5E9")) // highlight green
+            cardView?.setCardBackgroundColor(Color.parseColor("#1F2E54")) // highlight selection
         } else {
-            card.setBackgroundColor(Color.WHITE)
+            cardView?.setCardBackgroundColor(Color.parseColor("#16213E")) // default navy
         }
     }
 

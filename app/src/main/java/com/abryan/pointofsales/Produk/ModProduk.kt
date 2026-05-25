@@ -7,17 +7,24 @@ import android.view.View
 import android.widget.ArrayAdapter
 import android.widget.Button
 import android.widget.EditText
+import android.widget.ImageView
 import android.widget.Spinner
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
+import com.bumptech.glide.Glide
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.cardview.widget.CardView
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.abryan.pointofsales.R
+import com.abryan.pointofsales.model.ModelCabang
+import com.abryan.pointofsales.model.ModelKategori
 import com.abryan.pointofsales.model.ModelProduk
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
 import java.text.NumberFormat
 import java.util.Locale
 
@@ -25,8 +32,13 @@ class ModProduk : AppCompatActivity() {
 
     private val database = FirebaseDatabase.getInstance()
     private val myRef = database.getReference("Produk")
+    private val kategoriRef = database.getReference("Kategori")
+    private val cabangRef = database.getReference("Cabang")
 
     private lateinit var cardBack: CardView
+    private lateinit var etImageUrl: EditText
+    private lateinit var btnPreviewGambar: Button
+    private lateinit var imgPreview: ImageView
     private lateinit var etNamaProduk: EditText
     private lateinit var etHargaProduk: EditText
     private lateinit var etStock: EditText
@@ -37,6 +49,9 @@ class ModProduk : AppCompatActivity() {
     private lateinit var btnHapus: Button
 
     private var editProduk: ModelProduk? = null
+    
+    private val listKategori = ArrayList<String>()
+    private val listCabang = ArrayList<String>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -52,20 +67,25 @@ class ModProduk : AppCompatActivity() {
         init()
         setupSpinner()
         setupFormatHarga()
+        
+        loadKategori()
+        loadCabang()
 
         editProduk = intent.getSerializableExtra("produk") as? ModelProduk
         if (editProduk != null) {
             val data = editProduk!!
             val formatRupiah = NumberFormat.getNumberInstance(Locale("id", "ID"))
+            etImageUrl.setText(data.imageUrl)
+            if (data.imageUrl.isNotEmpty()) {
+                Glide.with(this)
+                    .load(data.imageUrl)
+                    .placeholder(R.drawable.produk)
+                    .error(R.drawable.produk)
+                    .into(imgPreview)
+            }
             etNamaProduk.setText(data.nama)
             etHargaProduk.setText(formatRupiah.format(data.harga))
             etStock.setText(data.stok.toString())
-
-            val jenisList = resources.getStringArray(R.array.SpinnerJenisProduk)
-            spinnerJenis.setSelection(jenisList.indexOf(data.jenis).takeIf { it >= 0 } ?: 0)
-
-            val cabangList = resources.getStringArray(R.array.SpinnerCabang)
-            spinnerCabang.setSelection(cabangList.indexOf(data.cabang).takeIf { it >= 0 } ?: 0)
 
             val statusList = arrayOf("-- Pilih Status --", "Aktif", "Non Aktif")
             spinnerStatus.setSelection(statusList.indexOf(data.status).takeIf { it >= 0 } ?: 0)
@@ -78,8 +98,73 @@ class ModProduk : AppCompatActivity() {
         cardBack.setOnClickListener { finish() }
         btnSimpan.setOnClickListener { simpan() }
         btnHapus.setOnClickListener { hapus() }
+
+        btnPreviewGambar.setOnClickListener {
+            val url = etImageUrl.text.toString().trim()
+            if (url.isEmpty()) {
+                Toast.makeText(this, "Masukkan URL gambar terlebih dahulu", Toast.LENGTH_SHORT).show()
+            } else {
+                Glide.with(this)
+                    .load(url)
+                    .placeholder(R.drawable.produk)
+                    .error(R.drawable.produk)
+                    .into(imgPreview)
+            }
+        }
     }
     
+    private fun loadKategori() {
+        kategoriRef.addValueEventListener(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                listKategori.clear()
+                listKategori.add("-- Pilih Kategori --")
+                for (data in snapshot.children) {
+                    val kategori = data.getValue(ModelKategori::class.java)
+                    if (kategori != null && kategori.statusKategori == "Aktif") {
+                        kategori.namaKategori?.let { listKategori.add(it) }
+                    }
+                }
+                val kategoriAdapter = ArrayAdapter(this@ModProduk, android.R.layout.simple_spinner_item, listKategori)
+                kategoriAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+                spinnerJenis.adapter = kategoriAdapter
+                
+                editProduk?.let { data ->
+                    val index = listKategori.indexOf(data.jenis)
+                    if (index >= 0) spinnerJenis.setSelection(index)
+                }
+            }
+            override fun onCancelled(error: DatabaseError) {
+                Toast.makeText(this@ModProduk, "Gagal memuat kategori", Toast.LENGTH_SHORT).show()
+            }
+        })
+    }
+    
+    private fun loadCabang() {
+        cabangRef.addValueEventListener(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                listCabang.clear()
+                listCabang.add("-- Pilih Cabang --")
+                for (data in snapshot.children) {
+                    val cabang = data.getValue(ModelCabang::class.java)
+                    if (cabang != null && cabang.statusCabang == "Buka") {
+                        cabang.namaCabang?.let { listCabang.add(it) }
+                    }
+                }
+                val cabangAdapter = ArrayAdapter(this@ModProduk, android.R.layout.simple_spinner_item, listCabang)
+                cabangAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+                spinnerCabang.adapter = cabangAdapter
+                
+                editProduk?.let { data ->
+                    val index = listCabang.indexOf(data.cabang)
+                    if (index >= 0) spinnerCabang.setSelection(index)
+                }
+            }
+            override fun onCancelled(error: DatabaseError) {
+                Toast.makeText(this@ModProduk, "Gagal memuat cabang", Toast.LENGTH_SHORT).show()
+            }
+        })
+    }
+
     private fun hapus() {
         val idHapus = editProduk?.id ?: return
         
@@ -104,6 +189,9 @@ class ModProduk : AppCompatActivity() {
 
     private fun init() {
         cardBack = findViewById(R.id.cardBack)
+        etImageUrl = findViewById(R.id.etImageUrl)
+        btnPreviewGambar = findViewById(R.id.btnPreviewGambar)
+        imgPreview = findViewById(R.id.imgPreview)
         etNamaProduk = findViewById(R.id.etNamaKategori)
         etHargaProduk = findViewById(R.id.etHargaProduk)
         etStock = findViewById(R.id.etStock)
@@ -115,23 +203,17 @@ class ModProduk : AppCompatActivity() {
     }
 
     private fun setupSpinner() {
-        val jenisItems = resources.getStringArray(R.array.SpinnerJenisProduk)
-        val jenisAdapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, jenisItems)
-        jenisAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-        spinnerJenis.adapter = jenisAdapter
-        spinnerJenis.setSelection(0)
-
-        val cabangItems = resources.getStringArray(R.array.SpinnerCabang)
-        val cabangAdapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, cabangItems)
-        cabangAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-        spinnerCabang.adapter = cabangAdapter
-        spinnerCabang.setSelection(0)
-
+        // Spinner Status tetap statis
         val statusItems = arrayOf("-- Pilih Status --", "Aktif", "Non Aktif")
         val statusAdapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, statusItems)
         statusAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         spinnerStatus.adapter = statusAdapter
         spinnerStatus.setSelection(0)
+        
+        // Setup awal array list kosong untuk Kategori dan Cabang, akan diperbarui di loadKategori() dan loadCabang()
+        val emptyAdapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, arrayOf("Memuat data..."))
+        spinnerJenis.adapter = emptyAdapter
+        spinnerCabang.adapter = emptyAdapter
     }
 
     private fun setupFormatHarga() {
@@ -155,12 +237,13 @@ class ModProduk : AppCompatActivity() {
     }
 
     private fun simpan() {
+        val imageUrl = etImageUrl.text.toString().trim()
         val nama = etNamaProduk.text.toString().trim()
         val harga = etHargaProduk.text.toString().replace(".", "").toLongOrNull() ?: 0L
         val stok = etStock.text.toString().trim()
-        val jenis = spinnerJenis.selectedItem.toString()
-        val cabang = spinnerCabang.selectedItem.toString()
-        val status = spinnerStatus.selectedItem.toString()
+        val jenis = spinnerJenis.selectedItem?.toString() ?: ""
+        val cabang = spinnerCabang.selectedItem?.toString() ?: ""
+        val status = spinnerStatus.selectedItem?.toString() ?: ""
 
         if (nama.isEmpty()) {
             etNamaProduk.error = "Nama produk tidak boleh kosong"
@@ -177,15 +260,15 @@ class ModProduk : AppCompatActivity() {
             etStock.requestFocus()
             return
         }
-        if (jenis == "Pilih Jenis Produk") {
-            Toast.makeText(this, "Pilih jenis produk terlebih dahulu", Toast.LENGTH_SHORT).show()
+        if (jenis == "Memuat data..." || jenis == "-- Pilih Kategori --" || jenis.isEmpty()) {
+            Toast.makeText(this, "Pilih kategori produk terlebih dahulu", Toast.LENGTH_SHORT).show()
             return
         }
-        if (cabang == "Pilih Cabang") {
+        if (cabang == "Memuat data..." || cabang == "-- Pilih Cabang --" || cabang.isEmpty()) {
             Toast.makeText(this, "Pilih cabang terlebih dahulu", Toast.LENGTH_SHORT).show()
             return
         }
-        if (status == "-- Pilih Status --") {
+        if (status == "-- Pilih Status --" || status.isEmpty()) {
             Toast.makeText(this, "Pilih status terlebih dahulu", Toast.LENGTH_SHORT).show()
             return
         }
@@ -201,7 +284,8 @@ class ModProduk : AppCompatActivity() {
                 "jenis" to jenis,
                 "stok" to stok.toInt(),
                 "cabang" to cabang,
-                "status" to status
+                "status" to status,
+                "imageUrl" to imageUrl
             )
             myRef.child(produkId).updateChildren(produkData)
                 .addOnSuccessListener {
@@ -226,7 +310,8 @@ class ModProduk : AppCompatActivity() {
                 "jenis" to jenis,
                 "stok" to stok.toInt(),
                 "cabang" to cabang,
-                "status" to status
+                "status" to status,
+                "imageUrl" to imageUrl
             )
             produkBaru.setValue(produkData)
                 .addOnSuccessListener {

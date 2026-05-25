@@ -9,5 +9,6 @@ data class ModelProduk(
     val jenis: String = "",
     val stok: Int = 0,
     val cabang: String = "",
-    val status: String = ""
+    val status: String = "",
+    val imageUrl: String = ""
 ) : Serializable
