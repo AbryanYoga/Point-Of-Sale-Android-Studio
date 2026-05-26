@@ -14,6 +14,7 @@ import com.abryan.pointofsales.Kategori.DataKategoriActivity
 import com.abryan.pointofsales.Cabang.DataCabangActivity
 import com.abryan.pointofsales.Pegawai.DataPegawaiActivity
 import com.abryan.pointofsales.Produk.DataProdukActivity
+import com.abryan.pointofsales.Transaksi.LaporanActivity
 import com.abryan.pointofsales.Transaksi.RiwayatTransaksiActivity
 import com.abryan.pointofsales.Transaksi.TransaksiActivity
 import com.bumptech.glide.Glide
@@ -107,6 +108,11 @@ class MainActivity : AppCompatActivity() {
 
         cardTransaksi.setOnClickListener {
             startActivity(Intent(this, TransaksiActivity::class.java))
+        }
+
+        cardLaporan.setOnClickListener {
+            val intent = Intent(this, LaporanActivity::class.java)
+            startActivity(intent)
         }
 
         cardPrinter.setOnClickListener {

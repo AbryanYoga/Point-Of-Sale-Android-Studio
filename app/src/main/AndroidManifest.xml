@@ -82,6 +82,14 @@
             android:name=".Transaksi.HasilTransaksiActivity"
             android:exported="false" />
         <activity
+            android:name=".Transaksi.LaporanActivity"
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize" />
+        <activity
+            android:name=".Transaksi.DetailTransaksiActivity"
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize" />
+        <activity
             android:name=".Transaksi.RiwayatTransaksiActivity"
             android:exported="false" />
         <activity

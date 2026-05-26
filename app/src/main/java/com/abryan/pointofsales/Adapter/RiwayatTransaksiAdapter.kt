@@ -6,7 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import com.abryan.pointofsales.Transaksi.HasilTransaksiActivity
+import com.abryan.pointofsales.Transaksi.DetailTransaksiActivity
 import com.abryan.pointofsales.R
 import com.abryan.pointofsales.model.ModelTransaksi
 import java.text.NumberFormat
@@ -44,7 +44,7 @@ class RiwayatTransaksiAdapter(
         holder.tvRiwayatTotalHarga.text = "Rp " + formatRp.format(data.totalHarga)
 
         holder.itemView.setOnClickListener {
-            val intent = Intent(holder.itemView.context, HasilTransaksiActivity::class.java)
+            val intent = Intent(holder.itemView.context, DetailTransaksiActivity::class.java)
             intent.putExtra("transaksi", data)
             holder.itemView.context.startActivity(intent)
         }

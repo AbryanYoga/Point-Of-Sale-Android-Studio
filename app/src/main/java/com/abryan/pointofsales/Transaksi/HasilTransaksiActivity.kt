@@ -67,10 +67,10 @@ class HasilTransaksiActivity : AppCompatActivity() {
         val partialTransaksi = intent.getSerializableExtra("transaksi") as? ModelTransaksi
 
         if (partialTransaksi != null) {
-            namaKasir = intent.getStringExtra("namaKasir") ?: "Kasir Default"
-            nomorHpKasir = intent.getStringExtra("nomorKasir") ?: ""
-            namaCabang = intent.getStringExtra("namaCabang") ?: ""
-            alamatCabang = intent.getStringExtra("alamatCabang") ?: ""
+            namaKasir = partialTransaksi.namaKasir.ifEmpty { "Kasir Default" }
+            nomorHpKasir = partialTransaksi.nomorKasir
+            namaCabang = partialTransaksi.cabang
+            alamatCabang = partialTransaksi.alamatCabang
 
             finalizeTransaction(partialTransaksi)
         } else {

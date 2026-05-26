@@ -416,4 +416,4 @@ class TransaksiActivity : AppCompatActivity() {
 
         dialog.show()
     }
-}/
+}
