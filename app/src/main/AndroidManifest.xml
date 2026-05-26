@@ -19,13 +19,15 @@
         android:theme="@style/Theme.PointOfSales">
         <activity
             android:name=".EditProfile"
-            android:exported="false" />
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize" />
         <activity
             android:name=".Profile"
             android:exported="false" /> <!-- LoginProfile jadi LAUNCHER (halaman pertama) -->
         <activity
             android:name=".LoginProfile"
-            android:exported="true">
+            android:exported="true"
+            android:windowSoftInputMode="adjustResize">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -34,13 +36,15 @@
         </activity>
         <activity
             android:name=".RegisterProfile"
-            android:exported="false" /> <!-- MainActivity tidak lagi jadi LAUNCHER -->
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize" /> <!-- MainActivity tidak lagi jadi LAUNCHER -->
         <activity
             android:name=".MainActivity"
             android:exported="false" />
         <activity
             android:name=".Produk.ModProduk"
-            android:exported="false" />
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize" />
         <activity
             android:name=".Produk.DataProdukActivity"
             android:exported="false" />
@@ -58,25 +62,32 @@
             android:exported="false" />
         <activity
             android:name=".Cabang.ModCabangActivity"
-            android:exported="false" />
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize" />
         <activity
             android:name=".Cabang.DataCabangActivity"
             android:exported="false" />
         <activity
             android:name=".Pegawai.ModPegawaiActivity"
-            android:exported="false" />
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize" />
         <activity
             android:name=".Pegawai.DataPegawaiActivity"
             android:exported="false" />
         <activity
             android:name=".Transaksi.TransaksiActivity"
-            android:exported="false" />
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize" />
         <activity
             android:name=".Transaksi.HasilTransaksiActivity"
             android:exported="false" />
         <activity
             android:name=".Transaksi.RiwayatTransaksiActivity"
             android:exported="false" />
+        <activity
+            android:name=".Transaksi.TarikTunaiActivity"
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize" />
     </application>
 
 </manifest>

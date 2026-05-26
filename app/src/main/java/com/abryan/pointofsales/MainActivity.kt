@@ -116,6 +116,11 @@ class MainActivity : AppCompatActivity() {
         cardProfile.setOnClickListener {
             startActivity(Intent(this, Profile::class.java))
         }
+
+        findViewById<android.view.View>(R.id.btnTarikTunai).setOnClickListener {
+            val intent = Intent(this, com.abryan.pointofsales.Transaksi.TarikTunaiActivity::class.java)
+            startActivity(intent)
+        }
     }
 
     private fun loadUserData() {
@@ -164,25 +169,46 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun loadTotalPendapatan() {
-        database.reference.child("transaksi").addValueEventListener(object : ValueEventListener {
+        val uid = auth.currentUser?.uid
+        if (uid == null) {
+            tvRupiah.text = "Rp 0"
+            return
+        }
+
+        database.reference.child("users").child(uid).child("totalKeuntungan")
+            .addValueEventListener(object : ValueEventListener {
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    if (snapshot.exists()) {
+                        val total = snapshot.getValue(Long::class.java) ?: 0L
+                        val formatRupiah = NumberFormat.getNumberInstance(Locale("id", "ID"))
+                        tvRupiah.text = "Rp ${formatRupiah.format(total)}"
+                    } else {
+                        migrateTotalFromTransaksi(uid)
+                    }
+                }
+
+                override fun onCancelled(error: DatabaseError) {
+                    Toast.makeText(
+                        this@MainActivity,
+                        "Gagal memuat total pendapatan: ${error.message}",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+            })
+    }
+
+    private fun migrateTotalFromTransaksi(uid: String) {
+        database.reference.child("transaksi").addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 var total: Long = 0
                 for (transaksiSnapshot in snapshot.children) {
                     val totalHarga = transaksiSnapshot.child("totalHarga").getValue(Long::class.java) ?: 0L
                     total += totalHarga
                 }
-                
-                val formatRupiah = NumberFormat.getNumberInstance(Locale("id", "ID"))
-                tvRupiah.text = "Rp ${formatRupiah.format(total)}"
+                database.reference.child("users").child(uid).child("totalKeuntungan").setValue(total)
             }
 
-            override fun onCancelled(error: DatabaseError) {
-                Toast.makeText(
-                    this@MainActivity,
-                    "Gagal memuat total pendapatan: ${error.message}",
-                    Toast.LENGTH_SHORT
-                ).show()
-            }
+            override fun onCancelled(error: DatabaseError) {}
         })
     }
 

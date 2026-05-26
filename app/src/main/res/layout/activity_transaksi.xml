@@ -63,6 +63,88 @@
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.cardview.widget.CardView>
 
+    <!-- BRANCH AND CATEGORY SELECTORS -->
+    <TextView
+        android:id="@+id/tvLabelCabang"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="12dp"
+        android:text="PILIH CABANG"
+        android:textColor="#B0B0C0"
+        android:textSize="11sp"
+        android:textStyle="bold"
+        android:letterSpacing="0.05"
+        app:layout_constraintTop_toBottomOf="@id/cardHeader"
+        app:layout_constraintStart_toStartOf="parent"/>
+
+    <HorizontalScrollView
+        android:id="@+id/scrollCabang"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="6dp"
+        android:scrollbars="none"
+        android:paddingHorizontal="20dp"
+        android:clipToPadding="false"
+        app:layout_constraintTop_toBottomOf="@id/tvLabelCabang">
+
+        <com.google.android.material.chip.ChipGroup
+            android:id="@+id/cgCabang"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:singleLine="true"
+            app:singleSelection="true"
+            app:selectionRequired="true" />
+    </HorizontalScrollView>
+
+    <TextView
+        android:id="@+id/tvLabelKategori"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="12dp"
+        android:text="FILTER KATEGORI"
+        android:textColor="#B0B0C0"
+        android:textSize="11sp"
+        android:textStyle="bold"
+        android:letterSpacing="0.05"
+        android:visibility="gone"
+        app:layout_constraintTop_toBottomOf="@id/scrollCabang"
+        app:layout_constraintStart_toStartOf="parent"/>
+
+    <HorizontalScrollView
+        android:id="@+id/scrollKategori"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="6dp"
+        android:scrollbars="none"
+        android:paddingHorizontal="20dp"
+        android:clipToPadding="false"
+        android:visibility="gone"
+        app:layout_constraintTop_toBottomOf="@id/tvLabelKategori">
+
+        <com.google.android.material.chip.ChipGroup
+            android:id="@+id/cgKategori"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:singleLine="true"
+            app:singleSelection="true"
+            app:selectionRequired="true" />
+    </HorizontalScrollView>
+
+    <TextView
+        android:id="@+id/tvPilihCabangDulu"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Pilih cabang terlebih dahulu"
+        android:textColor="#B0B0C0"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        app:layout_constraintTop_toBottomOf="@id/scrollCabang"
+        app:layout_constraintBottom_toTopOf="@id/cardSummary"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvProdukTransaksi"
         android:layout_width="match_parent"
@@ -71,8 +153,9 @@
         android:layout_marginTop="12dp"
         android:paddingBottom="12dp"
         android:clipToPadding="false"
+        android:visibility="gone"
         app:layout_constraintBottom_toTopOf="@id/cardSummary"
-        app:layout_constraintTop_toBottomOf="@id/cardHeader"
+        app:layout_constraintTop_toBottomOf="@id/scrollKategori"
         tools:listitem="@layout/item_produk_transaksi" />
 
     <androidx.constraintlayout.widget.ConstraintLayout

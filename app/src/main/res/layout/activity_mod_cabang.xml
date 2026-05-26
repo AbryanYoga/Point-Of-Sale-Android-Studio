@@ -83,6 +83,7 @@
                         android:layout_height="wrap_content"
                         android:padding="24dp">
 
+                        <!-- NAMA CABANG -->
                         <TextView
                             android:id="@+id/labelNama"
                             android:layout_width="wrap_content"
@@ -110,6 +111,7 @@
                             android:textSize="14sp"
                             app:layout_constraintTop_toBottomOf="@id/labelNama" />
 
+                        <!-- KODE CABANG -->
                         <TextView
                             android:id="@+id/labelKode"
                             android:layout_width="wrap_content"
@@ -138,6 +140,7 @@
                             android:textSize="14sp"
                             app:layout_constraintTop_toBottomOf="@id/labelKode" />
 
+                        <!-- PENANGGUNG JAWAB (ChipGroup from Firebase Pegawai) -->
                         <TextView
                             android:id="@+id/labelPJ"
                             android:layout_width="wrap_content"
@@ -151,33 +154,47 @@
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintTop_toBottomOf="@id/etKodeCabang" />
 
-                        <EditText
-                            android:id="@+id/etPenanggungJawab"
+                        <HorizontalScrollView
+                            android:id="@+id/scrollPenanggungJawab"
                             android:layout_width="match_parent"
-                            android:layout_height="60dp"
+                            android:layout_height="wrap_content"
                             android:layout_marginTop="8dp"
-                            android:background="@drawable/rounded_edittext"
-                            android:backgroundTint="?attr/colorSurfaceVariant"
-                            android:hint="Masukkan penanggung jawab"
-                            android:inputType="text"
-                            android:paddingHorizontal="20dp"
-                            android:textColor="?attr/colorOnSurface"
-                            android:textColorHint="?attr/colorOnSurfaceVariant"
-                            android:textSize="14sp"
+                            android:scrollbars="none"
+                            app:layout_constraintTop_toBottomOf="@id/labelPJ">
+
+                            <com.google.android.material.chip.ChipGroup
+                                android:id="@+id/cgPenanggungJawab"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                app:singleLine="true"
+                                app:singleSelection="true"
+                                app:selectionRequired="true" />
+                        </HorizontalScrollView>
+
+                        <TextView
+                            android:id="@+id/tvEmptyPegawai"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="8dp"
+                            android:text="Belum ada pegawai aktif, tambahkan dulu di menu Pegawai"
+                            android:textColor="#EF4444"
+                            android:textSize="12sp"
+                            android:visibility="gone"
                             app:layout_constraintTop_toBottomOf="@id/labelPJ" />
 
+                        <!-- NOMOR CABANG (auto-filled from selected PJ's phone) -->
                         <TextView
                             android:id="@+id/labelNomor"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="20dp"
                             android:letterSpacing="0.05"
-                            android:text="NOMOR CABANG"
+                            android:text="NOMOR CABANG (No. HP Penanggung Jawab)"
                             android:textColor="?attr/colorPrimary"
                             android:textSize="11sp"
                             android:textStyle="bold"
                             app:layout_constraintStart_toStartOf="parent"
-                            app:layout_constraintTop_toBottomOf="@id/etPenanggungJawab" />
+                            app:layout_constraintTop_toBottomOf="@id/scrollPenanggungJawab" />
 
                         <EditText
                             android:id="@+id/etNomorCabang"
@@ -186,7 +203,7 @@
                             android:layout_marginTop="8dp"
                             android:background="@drawable/rounded_edittext"
                             android:backgroundTint="?attr/colorSurfaceVariant"
-                            android:hint="Masukkan nomor cabang"
+                            android:hint="Otomatis terisi saat pilih PJ"
                             android:inputType="phone"
                             android:paddingHorizontal="20dp"
                             android:textColor="?attr/colorOnSurface"
@@ -194,6 +211,7 @@
                             android:textSize="14sp"
                             app:layout_constraintTop_toBottomOf="@id/labelNomor" />
 
+                        <!-- ALAMAT CABANG -->
                         <TextView
                             android:id="@+id/labelAlamat"
                             android:layout_width="wrap_content"
@@ -224,6 +242,7 @@
                             android:textSize="14sp"
                             app:layout_constraintTop_toBottomOf="@id/labelAlamat" />
 
+                        <!-- STATUS -->
                         <TextView
                             android:id="@+id/labelStatus"
                             android:layout_width="wrap_content"

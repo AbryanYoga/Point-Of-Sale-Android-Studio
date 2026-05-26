@@ -31,6 +31,7 @@ import com.google.firebase.database.FirebaseDatabase
 class HasilTransaksiActivity : AppCompatActivity() {
 
     private lateinit var tvStrukToko: TextView
+    private lateinit var tvNamaCabang: TextView
     private lateinit var tvAlamatToko: TextView
     private lateinit var tvIdTransaksi: TextView
     private lateinit var tvStrukTanggalWaktu: TextView
@@ -51,9 +52,10 @@ class HasilTransaksiActivity : AppCompatActivity() {
     private val database = FirebaseDatabase.getInstance()
     private val auth = FirebaseAuth.getInstance()
 
-    private var alamatToko = "Jl. Contoh No. 1, Kota Anda"
     private var namaKasir = "Kasir Default"
     private var nomorHpKasir = ""
+    private var namaCabang = ""
+    private var alamatCabang = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -65,7 +67,12 @@ class HasilTransaksiActivity : AppCompatActivity() {
         val partialTransaksi = intent.getSerializableExtra("transaksi") as? ModelTransaksi
 
         if (partialTransaksi != null) {
-            loadSettingsAndCashier(partialTransaksi)
+            namaKasir = intent.getStringExtra("namaKasir") ?: "Kasir Default"
+            nomorHpKasir = intent.getStringExtra("nomorKasir") ?: ""
+            namaCabang = intent.getStringExtra("namaCabang") ?: ""
+            alamatCabang = intent.getStringExtra("alamatCabang") ?: ""
+
+            finalizeTransaction(partialTransaksi)
         } else {
             Toast.makeText(this, "Data transaksi tidak ditemukan", Toast.LENGTH_SHORT).show()
             finish()
@@ -91,6 +98,7 @@ class HasilTransaksiActivity : AppCompatActivity() {
 
     private fun init() {
         tvStrukToko = findViewById(R.id.tvStrukToko)
+        tvNamaCabang = findViewById(R.id.tvNamaCabang)
         tvAlamatToko = findViewById(R.id.tvAlamatToko)
         tvIdTransaksi = findViewById(R.id.tvIdTransaksi)
         tvStrukTanggalWaktu = findViewById(R.id.tvStrukTanggalWaktu)
@@ -107,78 +115,14 @@ class HasilTransaksiActivity : AppCompatActivity() {
         btnTransaksiBaru = findViewById(R.id.btnTransaksiBaru)
     }
 
-    private fun loadSettingsAndCashier(partial: ModelTransaksi) {
-        // Load settings/alamatToko
-        database.getReference("settings").child("alamatToko").get()
-            .addOnSuccessListener { snapshot ->
-                snapshot.getValue(String::class.java)?.let {
-                    alamatToko = it
-                    tvAlamatToko.text = it
-                }
-            }
-
-        val uid = auth.currentUser?.uid
-        if (uid != null) {
-            // Cek di pegawai berdasarkan idPegawai == uid
-            database.getReference("pegawai").orderByChild("idPegawai").equalTo(uid).get()
-                .addOnSuccessListener { snapshot ->
-                    var found = false
-                    for (child in snapshot.children) {
-                        val peg = child.getValue(com.abryan.pointofsales.model.ModelPegawai::class.java)
-                        if (peg != null) {
-                            namaKasir = peg.namaPegawai ?: ""
-                            nomorHpKasir = peg.nomorHp ?: ""
-                            found = true
-                            break
-                        }
-                    }
-                    if (found) {
-                        finalizeTransaction(partial)
-                    } else {
-                        // Cari berdasarkan nama dari users/{uid}/nama
-                        database.getReference("users").child(uid).child("nama").get()
-                            .addOnSuccessListener { userSnapshot ->
-                                val nameFromUser = userSnapshot.getValue(String::class.java)
-                                if (!nameFromUser.isNullOrEmpty()) {
-                                    namaKasir = nameFromUser
-                                    // Cari di pegawai berdasarkan namaPegawai untuk mendapatkan HP
-                                    database.getReference("pegawai").orderByChild("namaPegawai").equalTo(nameFromUser).get()
-                                        .addOnSuccessListener { pegSnapshot ->
-                                            for (child in pegSnapshot.children) {
-                                                val peg = child.getValue(com.abryan.pointofsales.model.ModelPegawai::class.java)
-                                                if (peg != null) {
-                                                    nomorHpKasir = peg.nomorHp ?: ""
-                                                    break
-                                                }
-                                            }
-                                            finalizeTransaction(partial)
-                                        }
-                                        .addOnFailureListener {
-                                            finalizeTransaction(partial)
-                                        }
-                                } else {
-                                    finalizeTransaction(partial)
-                                }
-                            }
-                            .addOnFailureListener {
-                                finalizeTransaction(partial)
-                            }
-                    }
-                }
-                .addOnFailureListener {
-                    finalizeTransaction(partial)
-                }
-        } else {
-            finalizeTransaction(partial)
-        }
-    }
-
     private fun finalizeTransaction(partial: ModelTransaksi) {
         val timestamp = System.currentTimeMillis() / 1000
         val finalId = "TRX_$timestamp"
 
         val finalTransaksi = partial.copy(
             idTransaksi = finalId,
+            cabang = namaCabang,
+            alamatCabang = alamatCabang,
             namaKasir = namaKasir,
             nomorKasir = nomorHpKasir
         )
@@ -188,6 +132,17 @@ class HasilTransaksiActivity : AppCompatActivity() {
         database.getReference("transaksi").child(finalId).setValue(finalTransaksi)
             .addOnSuccessListener {
                 Toast.makeText(this, "Transaksi Berhasil Disimpan", Toast.LENGTH_SHORT).show()
+                
+                // Add transaction total to user's totalKeuntungan balance
+                val uid = auth.currentUser?.uid
+                if (uid != null) {
+                    val userRef = database.getReference("users").child(uid).child("totalKeuntungan")
+                    userRef.get().addOnSuccessListener { snapshot ->
+                        val currentSaldo = snapshot.getValue(Long::class.java) ?: 0L
+                        userRef.setValue(currentSaldo + finalTransaksi.totalHarga)
+                    }
+                }
+
                 // Kurangi stok di Firebase untuk masing-masing item
                 for (item in finalTransaksi.listItem) {
                     val produkId = item.idProduk
@@ -213,6 +168,8 @@ class HasilTransaksiActivity : AppCompatActivity() {
             tvNamaKasir.text = data.namaKasir
             tvHpKasir.text = if (data.nomorKasir.isNotEmpty()) data.nomorKasir else "-"
             tvStrukContact.text = "Contact: ${if (data.nomorKasir.isNotEmpty()) data.nomorKasir else "-"}"
+            tvNamaCabang.text = data.cabang
+            tvAlamatToko.text = if (data.alamatCabang.isNotEmpty()) data.alamatCabang else "Alamat Cabang"
 
             val formatRp = NumberFormat.getNumberInstance(Locale("id", "ID"))
             tvStrukSubtotal.text = "Rp " + formatRp.format(data.totalHarga)
@@ -266,7 +223,8 @@ class HasilTransaksiActivity : AppCompatActivity() {
                     
                     val textToPrint = StringBuilder()
                     textToPrint.append("[C]<b>Point Of Sales</b>\n")
-                    textToPrint.append("[C]${alamatToko}\n")
+                    textToPrint.append("[C]${data.cabang}\n")
+                    textToPrint.append("[C]${data.alamatCabang}\n")
                     textToPrint.append("[C]================================\n")
                     textToPrint.append("[L]ID: #TRX-${data.idTransaksi.takeLast(8)}\n")
                     textToPrint.append("[L]Tgl: ${data.tanggal} [R]Jam: ${data.waktu}\n")

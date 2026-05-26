@@ -1,9 +1,11 @@
 package com.abryan.pointofsales.Transaksi
 
 import android.content.Intent
+import android.graphics.Color
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.view.View
 import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageView
@@ -16,12 +18,13 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.recyclerview.widget.GridLayoutManager
-import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import android.graphics.Color
 import com.abryan.pointofsales.Adapter.TransaksiAdapter
 import com.abryan.pointofsales.R
+import com.abryan.pointofsales.model.ModelCabang
 import com.abryan.pointofsales.model.ModelItemTransaksi
+import com.abryan.pointofsales.model.ModelKategori
+import com.abryan.pointofsales.model.ModelPegawai
 import com.abryan.pointofsales.model.ModelProduk
 import com.abryan.pointofsales.model.ModelTransaksi
 import com.google.firebase.database.DataSnapshot
@@ -41,14 +44,28 @@ class TransaksiActivity : AppCompatActivity() {
     private lateinit var tvTotalHarga: TextView
     private lateinit var btnProsesTransaksi: Button
     private lateinit var imageBack: ImageView
+    private lateinit var cgCabang: com.google.android.material.chip.ChipGroup
+    private lateinit var cgKategori: com.google.android.material.chip.ChipGroup
+    private lateinit var tvPilihCabangDulu: TextView
+    private lateinit var tvLabelKategori: TextView
 
     private val database = FirebaseDatabase.getInstance()
     private val produkRef = database.getReference("Produk")
-    private val transaksiRef = database.getReference("transaksi")
+    private val cabangRef = database.getReference("cabang")
+    private val kategoriRef = database.getReference("kategori")
+    private val pegawaiRef = database.getReference("pegawai")
 
     private var listProduk = ArrayList<ModelProduk>()
     private var filteredList = ArrayList<ModelProduk>()
     private lateinit var adapter: TransaksiAdapter
+
+    private var cabangDipilih = ""
+    private var selectedAlamatCabang = ""
+    private var selectedKategori = "Semua"
+    private var kasirNama = "Kasir Default"
+    private var kasirHp = ""
+
+    private val activeCabangList = ArrayList<ModelCabang>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -60,34 +77,95 @@ class TransaksiActivity : AppCompatActivity() {
         val orientation = resources.configuration.orientation
         val columns = if (orientation == android.content.res.Configuration.ORIENTATION_LANDSCAPE) 2 else 1
         rvProdukTransaksi.layoutManager = GridLayoutManager(this, columns)
-        adapter = TransaksiAdapter(filteredList) {
-            hitungTotal()
-        }
+        adapter = TransaksiAdapter(filteredList) { hitungTotal() }
         rvProdukTransaksi.adapter = adapter
 
         imageBack.setOnClickListener { finish() }
 
-        loadProduk()
+        loadCabang()
+        loadKategori()
 
-        val searchEditTextId = searchProduk.context.resources.getIdentifier("android:id/search_src_text", null, null)
+        val searchEditTextId = resources.getIdentifier("android:id/search_src_text", null, null)
         val searchEditText = searchProduk.findViewById<TextView>(searchEditTextId)
         searchEditText?.setTextColor(Color.WHITE)
         searchEditText?.setHintTextColor(Color.parseColor("#B0B0C0"))
 
         searchProduk.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
-            override fun onQueryTextSubmit(query: String?): Boolean = false
+            override fun onQueryTextSubmit(query: String?) = false
             override fun onQueryTextChange(newText: String?): Boolean {
-                filterProduk(newText ?: "")
+                filterProdukLocal()
                 return true
             }
         })
 
         btnProsesTransaksi.setOnClickListener { prosesTransaksi() }
 
+        cgCabang.setOnCheckedStateChangeListener { group, checkedIds ->
+            if (checkedIds.isNotEmpty()) {
+                val chip = group.findViewById<com.google.android.material.chip.Chip>(checkedIds[0])
+                cabangDipilih = chip?.text?.toString() ?: ""
+                val matched = activeCabangList.find { it.namaCabang == cabangDipilih }
+                selectedAlamatCabang = matched?.alamatCabang ?: ""
+                tvPilihCabangDulu.visibility = View.GONE
+                tvLabelKategori.visibility = View.VISIBLE
+                findViewById<View>(R.id.scrollKategori).visibility = View.VISIBLE
+                rvProdukTransaksi.visibility = View.VISIBLE
+                loadProduk(cabangDipilih)
+                loadKasirCabang(cabangDipilih)
+            } else {
+                cabangDipilih = ""
+                selectedAlamatCabang = ""
+                tvPilihCabangDulu.visibility = View.VISIBLE
+                tvLabelKategori.visibility = View.GONE
+                findViewById<View>(R.id.scrollKategori).visibility = View.GONE
+                rvProdukTransaksi.visibility = View.GONE
+                listProduk.clear()
+                filterProdukLocal()
+            }
+        }
+
+        cgKategori.setOnCheckedStateChangeListener { group, checkedIds ->
+            selectedKategori = if (checkedIds.isNotEmpty()) {
+                group.findViewById<com.google.android.material.chip.Chip>(checkedIds[0])?.text?.toString() ?: "Semua"
+            } else "Semua"
+            filterProdukLocal()
+        }
+
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
+        }
+    }
+
+    private fun buatChip(teks: String): com.google.android.material.chip.Chip {
+        return com.google.android.material.chip.Chip(this).apply {
+            text = teks
+            isCheckable = true
+            isClickable = true
+            id = View.generateViewId()
+            chipBackgroundColor = android.content.res.ColorStateList(
+                arrayOf(
+                    intArrayOf(android.R.attr.state_checked),
+                    intArrayOf(-android.R.attr.state_checked)
+                ),
+                intArrayOf(
+                    Color.parseColor("#4F46E5"),
+                    Color.parseColor("#2A2A3E")
+                )
+            )
+            setTextColor(
+                android.content.res.ColorStateList(
+                    arrayOf(
+                        intArrayOf(android.R.attr.state_checked),
+                        intArrayOf(-android.R.attr.state_checked)
+                    ),
+                    intArrayOf(
+                        Color.WHITE,
+                        Color.parseColor("#B0B0C0")
+                    )
+                )
+            )
         }
     }
 
@@ -98,46 +176,103 @@ class TransaksiActivity : AppCompatActivity() {
         tvTotalHarga = findViewById(R.id.tvTotalHarga)
         btnProsesTransaksi = findViewById(R.id.btnProsesTransaksi)
         imageBack = findViewById(R.id.imageBack)
+        cgCabang = findViewById(R.id.cgCabang)
+        cgKategori = findViewById(R.id.cgKategori)
+        tvPilihCabangDulu = findViewById(R.id.tvPilihCabangDulu)
+        tvLabelKategori = findViewById(R.id.tvLabelKategori)
     }
 
-    private fun loadProduk() {
+    private fun loadCabang() {
+        cabangRef.addValueEventListener(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                cgCabang.removeAllViews()
+                activeCabangList.clear()
+                for (data in snapshot.children) {
+                    val cabang = data.getValue(ModelCabang::class.java)
+                    if (cabang != null && cabang.statusCabang == "Aktif") {
+                        activeCabangList.add(cabang)
+                        val name = cabang.namaCabang ?: continue
+                        cgCabang.addView(buatChip(name))
+                    }
+                }
+            }
+            override fun onCancelled(error: DatabaseError) {
+                Toast.makeText(this@TransaksiActivity, "Gagal load cabang: ${error.message}", Toast.LENGTH_SHORT).show()
+            }
+        })
+    }
+
+    private fun loadKategori() {
+        kategoriRef.addValueEventListener(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                cgKategori.removeAllViews()
+                val allChip = buatChip("Semua").apply { isChecked = true }
+                cgKategori.addView(allChip)
+                for (data in snapshot.children) {
+                    val kategori = data.getValue(ModelKategori::class.java)
+                    if (kategori != null && kategori.statusKategori == "Aktif") {
+                        val name = kategori.namaKategori ?: continue
+                        cgKategori.addView(buatChip(name))
+                    }
+                }
+            }
+            override fun onCancelled(error: DatabaseError) {
+                Toast.makeText(this@TransaksiActivity, "Gagal load kategori: ${error.message}", Toast.LENGTH_SHORT).show()
+            }
+        })
+    }
+
+    private fun loadKasirCabang(cabangName: String) {
+        pegawaiRef.addValueEventListener(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                kasirNama = "Kasir Default"
+                kasirHp = ""
+                for (data in snapshot.children) {
+                    val peg = data.getValue(ModelPegawai::class.java)
+                    if (peg != null && peg.cabangPegawai == cabangName && peg.statusPegawai == "Aktif") {
+                        kasirNama = peg.namaPegawai ?: "Kasir Default"
+                        kasirHp = peg.nomorHp ?: ""
+                        break
+                    }
+                }
+            }
+            override fun onCancelled(error: DatabaseError) {}
+        })
+    }
+
+    private fun loadProduk(cabangName: String) {
         produkRef.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 listProduk.clear()
                 for (data in snapshot.children) {
                     val produk = data.getValue(ModelProduk::class.java)
-                    if (produk != null && produk.status == "Aktif" && produk.stok > 0) {
+                    if (produk != null && produk.status == "Aktif" && produk.cabang == cabangName && produk.stok > 0) {
                         listProduk.add(produk)
                     }
                 }
-                filterProduk(searchProduk.query.toString())
+                filterProdukLocal()
             }
-
             override fun onCancelled(error: DatabaseError) {
-                Toast.makeText(this@TransaksiActivity, "Gagal meload produk: ${error.message}", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this@TransaksiActivity, "Gagal load produk: ${error.message}", Toast.LENGTH_SHORT).show()
             }
         })
     }
 
-    private fun filterProduk(query: String) {
+    private fun filterProdukLocal() {
         filteredList.clear()
-        if (query.isEmpty()) {
-            filteredList.addAll(listProduk)
-        } else {
-            val lowerCaseQuery = query.lowercase(Locale.getDefault())
-            for (produk in listProduk) {
-                if (produk.nama.lowercase(Locale.getDefault()).contains(lowerCaseQuery)) {
-                    filteredList.add(produk)
-                }
-            }
+        val query = searchProduk.query.toString().lowercase(Locale.getDefault())
+        for (produk in listProduk) {
+            val matchQuery = query.isEmpty() || produk.nama.lowercase(Locale.getDefault()).contains(query)
+            val matchCategory = selectedKategori == "Semua" || selectedKategori.isEmpty() || produk.jenis.equals(selectedKategori, ignoreCase = true)
+            if (matchQuery && matchCategory) filteredList.add(produk)
         }
         adapter.updateList(filteredList)
+        hitungTotal()
     }
 
     private fun hitungTotal() {
         var totalQty = 0
         var totalHarga = 0L
-
         for ((produkId, jumlah) in adapter.selectedItems) {
             val produk = listProduk.find { it.id == produkId }
             if (produk != null) {
@@ -145,13 +280,16 @@ class TransaksiActivity : AppCompatActivity() {
                 totalHarga += (produk.harga * jumlah)
             }
         }
-
         tvTotalItem.text = totalQty.toString()
         val formatRp = NumberFormat.getNumberInstance(Locale("id", "ID"))
         tvTotalHarga.text = "Rp " + formatRp.format(totalHarga)
     }
 
     private fun prosesTransaksi() {
+        if (cabangDipilih.isEmpty()) {
+            Toast.makeText(this, "Pilih cabang terlebih dahulu!", Toast.LENGTH_SHORT).show()
+            return
+        }
         if (adapter.selectedItems.isEmpty()) {
             Toast.makeText(this, "Pilih minimal 1 produk!", Toast.LENGTH_SHORT).show()
             return
@@ -205,7 +343,6 @@ class TransaksiActivity : AppCompatActivity() {
         val dialog = AlertDialog.Builder(this)
             .setView(dialogView)
             .create()
-
         dialog.window?.setBackgroundDrawableResource(android.R.color.transparent)
 
         val tvSubtotal = dialogView.findViewById<TextView>(R.id.tvSubtotal)
@@ -238,9 +375,7 @@ class TransaksiActivity : AppCompatActivity() {
             }
         })
 
-        btnBatal.setOnClickListener {
-            dialog.dismiss()
-        }
+        btnBatal.setOnClickListener { dialog.dismiss() }
 
         btnBayar.setOnClickListener {
             val nominalStr = etNominalBayar.text.toString().replace(".", "").replace(",", "")
@@ -255,7 +390,7 @@ class TransaksiActivity : AppCompatActivity() {
             val kembalian = nominalVal - totalSetelahPpn
 
             val transaksi = ModelTransaksi(
-                idTransaksi = "", // Akan di-generate di HasilTransaksiActivity
+                idTransaksi = "",
                 tanggal = tanggal,
                 waktu = waktu,
                 totalHarga = totalHarga,
@@ -264,7 +399,10 @@ class TransaksiActivity : AppCompatActivity() {
                 nominalBayar = nominalVal,
                 kembalian = kembalian,
                 totalItem = totalQty,
-                cabang = "Pusat",
+                cabang = cabangDipilih,
+                alamatCabang = selectedAlamatCabang,
+                namaKasir = kasirNama,
+                nomorKasir = kasirHp,
                 listItem = listItem,
                 statusTransaksi = "Selesai"
             )
@@ -278,4 +416,4 @@ class TransaksiActivity : AppCompatActivity() {
 
         dialog.show()
     }
-}
+}/

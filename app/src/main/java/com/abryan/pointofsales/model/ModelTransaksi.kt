@@ -13,6 +13,7 @@ data class ModelTransaksi(
     val kembalian: Long = 0,
     val totalItem: Int = 0,
     val cabang: String = "",
+    val alamatCabang: String = "",
     val namaKasir: String = "",
     val nomorKasir: String = "",
     val listItem: List<ModelItemTransaksi> = emptyList(),

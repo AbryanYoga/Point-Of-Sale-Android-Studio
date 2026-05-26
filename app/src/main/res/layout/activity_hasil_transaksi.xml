@@ -10,16 +10,15 @@
 
     <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:fillViewport="true"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/cardBottomControls">
+        android:layout_height="match_parent"
+        android:fillViewport="true">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:padding="20dp">
 
+            <!-- RECEIPT STRUK CARD -->
             <com.google.android.material.card.MaterialCardView
                 android:id="@+id/cardStruk"
                 android:layout_width="match_parent"
@@ -28,7 +27,9 @@
                 app:cardElevation="4dp"
                 app:cardBackgroundColor="#FFFFFF"
                 app:strokeWidth="0dp"
-                app:layout_constraintTop_toTopOf="parent">
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent">
 
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:layout_width="match_parent"
@@ -44,6 +45,7 @@
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent" />
 
+                    <!-- STORE NAME -->
                     <TextView
                         android:id="@+id/tvStrukToko"
                         android:layout_width="wrap_content"
@@ -57,17 +59,33 @@
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="@id/imgLogo" />
 
+                    <!-- BRANCH SUBHEADER -->
                     <TextView
-                        android:id="@+id/tvAlamatToko"
+                        android:id="@+id/tvNamaCabang"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="4dp"
-                        android:text="Jl. Contoh No. 1, Kota Anda"
+                        android:text="Cabang"
+                        android:textColor="#333333"
+                        android:textSize="14sp"
+                        android:textStyle="bold"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/tvStrukToko" />
+
+                    <!-- BRANCH ADDRESS -->
+                    <TextView
+                        android:id="@+id/tvAlamatToko"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp"
+                        android:gravity="center"
+                        android:text="Alamat Cabang"
                         android:textColor="#555555"
                         android:textSize="12sp"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@id/tvStrukToko" />
+                        app:layout_constraintTop_toBottomOf="@id/tvNamaCabang" />
 
                     <TextView
                         android:id="@+id/separator1"
@@ -80,6 +98,7 @@
                         android:textSize="12sp"
                         app:layout_constraintTop_toBottomOf="@id/tvAlamatToko" />
 
+                    <!-- ID TRANSAKSI -->
                     <TextView
                         android:id="@+id/tvLabelIdTransaksi"
                         android:layout_width="wrap_content"
@@ -102,6 +121,7 @@
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintTop_toTopOf="@id/tvLabelIdTransaksi" />
 
+                    <!-- TANGGAL WAKTU -->
                     <TextView
                         android:id="@+id/tvLabelTanggal"
                         android:layout_width="wrap_content"
@@ -124,6 +144,7 @@
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintTop_toTopOf="@id/tvLabelTanggal" />
 
+                    <!-- KASIR -->
                     <TextView
                         android:id="@+id/tvLabelKasir"
                         android:layout_width="wrap_content"
@@ -146,6 +167,7 @@
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintTop_toTopOf="@id/tvLabelKasir" />
 
+                    <!-- HP KASIR -->
                     <TextView
                         android:id="@+id/tvLabelHpKasir"
                         android:layout_width="wrap_content"
@@ -179,6 +201,7 @@
                         android:textSize="12sp"
                         app:layout_constraintTop_toBottomOf="@id/tvLabelHpKasir" />
 
+                    <!-- RECIPES ITEMS -->
                     <androidx.recyclerview.widget.RecyclerView
                         android:id="@+id/rvStrukItems"
                         android:layout_width="match_parent"
@@ -198,6 +221,7 @@
                         android:textSize="12sp"
                         app:layout_constraintTop_toBottomOf="@id/rvStrukItems" />
 
+                    <!-- TOTALS -->
                     <TextView
                         android:id="@+id/tvLabelSubtotal"
                         android:layout_width="wrap_content"
@@ -317,6 +341,7 @@
                         android:textSize="12sp"
                         app:layout_constraintTop_toBottomOf="@id/tvLabelKembalian" />
 
+                    <!-- FOOTER -->
                     <TextView
                         android:id="@+id/tvStrukFooter"
                         android:layout_width="match_parent"
@@ -342,59 +367,46 @@
                 </androidx.constraintlayout.widget.ConstraintLayout>
             </com.google.android.material.card.MaterialCardView>
 
+            <!-- PRINT AND NAVIGATION BUTTONS -->
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/cardBottomControls"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                app:layout_constraintTop_toBottomOf="@id/cardStruk"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent">
+
+                <Button
+                    android:id="@+id/btnPrint"
+                    android:layout_width="match_parent"
+                    android:layout_height="56dp"
+                    android:background="@drawable/bg_btn_proses"
+                    app:backgroundTint="@null"
+                    android:text="Print Struk"
+                    android:textColor="#FFFFFF"
+                    android:textSize="14sp"
+                    android:textStyle="bold"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent" />
+
+                <Button
+                    android:id="@+id/btnTransaksiBaru"
+                    android:layout_width="match_parent"
+                    android:layout_height="56dp"
+                    android:layout_marginTop="12dp"
+                    android:background="@drawable/bg_btn_secondary"
+                    app:backgroundTint="@null"
+                    android:text="Transaksi Baru"
+                    android:textColor="#FFFFFF"
+                    android:textSize="14sp"
+                    android:textStyle="bold"
+                    app:layout_constraintTop_toBottomOf="@id/btnPrint"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
         </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>
-
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/cardBottomControls"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="#0D0D1A"
-        app:layout_constraintBottom_toBottomOf="parent">
-
-        <View
-            android:id="@+id/borderTopControls"
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:background="#0F3460"
-            app:layout_constraintTop_toTopOf="parent"/>
-
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:padding="20dp"
-            app:layout_constraintTop_toBottomOf="@id/borderTopControls">
-
-            <Button
-                android:id="@+id/btnPrint"
-                android:layout_width="0dp"
-                android:layout_height="56dp"
-                android:background="@drawable/bg_btn_proses"
-                app:backgroundTint="@null"
-                android:text="Print Struk"
-                android:textColor="#FFFFFF"
-                android:textSize="14sp"
-                android:textStyle="bold"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-
-            <Button
-                android:id="@+id/btnTransaksiBaru"
-                android:layout_width="0dp"
-                android:layout_height="56dp"
-                android:layout_marginTop="12dp"
-                android:background="@drawable/bg_btn_secondary"
-                app:backgroundTint="@null"
-                android:text="Transaksi Baru"
-                android:textColor="#FFFFFF"
-                android:textSize="14sp"
-                android:textStyle="bold"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/btnPrint" />
-
-        </androidx.constraintlayout.widget.ConstraintLayout>
-    </androidx.constraintlayout.widget.ConstraintLayout>
-
 </androidx.constraintlayout.widget.ConstraintLayout>
