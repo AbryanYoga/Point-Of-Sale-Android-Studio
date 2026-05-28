@@ -7,13 +7,13 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".Transaksi.LaporanActivity"
-    android:background="?attr/colorSurface">
+    android:background="@color/bgScreen">
 
     <androidx.cardview.widget.CardView
         android:id="@+id/cardHeader"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:backgroundTint="@color/backgroundModKategori"
+        android:backgroundTint="@color/bgCard"
         app:cardElevation="2dp"
         app:layout_constraintTop_toTopOf="parent">
 
@@ -53,7 +53,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
                 android:text="Laporan Keuangan"
-                android:textColor="@color/textModkategori"
+                android:textColor="@color/textPrimary"
                 android:textSize="20sp"
                 android:textStyle="bold"
                 app:layout_constraintBottom_toBottomOf="parent"
@@ -98,7 +98,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Saldo Bersih"
-                        android:textColor="#888888"
+                        android:textColor="@color/textSecondary"
                         android:textSize="14sp"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent" />
@@ -109,7 +109,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="6dp"
                         android:text="Rp 0"
-                        android:textColor="@color/textModkategori"
+                        android:textColor="@color/textPrimary"
                         android:textSize="32sp"
                         android:textStyle="bold"
                         app:layout_constraintEnd_toEndOf="parent"
@@ -145,7 +145,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Pemasukan"
-                        android:textColor="#888888"
+                        android:textColor="@color/textSecondary"
                         android:textSize="12sp"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent" />
@@ -192,7 +192,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Pengeluaran"
-                        android:textColor="#888888"
+                        android:textColor="@color/textSecondary"
                         android:textSize="12sp"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent" />
@@ -220,7 +220,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="24dp"
                 android:text="Log Aktivitas Keuangan"
-                android:textColor="@color/textModkategori"
+                android:textColor="@color/textPrimary"
                 android:textSize="16sp"
                 android:textStyle="bold"
                 app:layout_constraintStart_toStartOf="parent"
@@ -254,7 +254,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Transaksi"
-                        android:textColor="@color/textModkategori"
+                        android:textColor="@color/textPrimary"
                         android:textSize="13sp"
                         android:textStyle="bold"
                         app:layout_constraintBottom_toBottomOf="parent"
@@ -292,7 +292,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Penarikan"
-                        android:textColor="@color/textModkategori"
+                        android:textColor="@color/textPrimary"
                         android:textSize="13sp"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"

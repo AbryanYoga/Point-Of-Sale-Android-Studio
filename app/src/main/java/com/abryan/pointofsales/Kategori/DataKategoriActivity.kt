@@ -43,6 +43,10 @@ class DataKategoriActivity : AppCompatActivity() {
 
         fabData = findViewById(R.id.fabDataKategori)
         rvKategori = findViewById(R.id.rvDataKategori)
+        val imageBack = findViewById<android.widget.ImageView>(R.id.imageBack)
+        imageBack.setOnClickListener {
+            finish()
+        }
 
         rvKategori.layoutManager = LinearLayoutManager(this)
         listKategori = ArrayList()

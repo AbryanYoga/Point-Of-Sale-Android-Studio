@@ -7,8 +7,8 @@
     <color name="CircleNavbar">#BD08E4</color>
     <color name="TeksBawahNavbar">#ffffff</color>
     <color name="icon">#FFFFFF</color>
-    <color name="CardKategori">#FFFFFF</color>
-    <color name="IconKategori">#000000</color>
+    <color name="CardKategori">#1E1A4A</color>
+    <color name="IconKategori">#7B72F0</color>
     
     //Untuk Kategori
     <color name="backgroundModKategori">#1A1B2E</color>
@@ -21,4 +21,15 @@
     //Untuk Produk
     <color name="BackgroundCardProduk">#1A1B2E</color>
     <color name="IconProduk">#ffffff</color>
+
+    <color name="bgScreen">#0D0F1E</color>
+    <color name="bgCard">#161B36</color>
+    <color name="bgCardInner">#1A1D35</color>
+    <color name="strokeCard">#2A2E52</color>
+    <color name="textPrimary">#E8EAFF</color>
+    <color name="textSecondary">#7A80A8</color>
+    <color name="textHint">#3E4470</color>
+    <color name="accentPurple">#7B72F0</color>
+    <color name="iconBg">#1E1A4A</color>
+    <color name="iconColor">#7B72F0</color>
 </resources>

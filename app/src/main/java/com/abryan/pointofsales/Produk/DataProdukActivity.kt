@@ -43,6 +43,10 @@ class DataProdukActivity : AppCompatActivity() {
 
         fabData = findViewById(R.id.fabDataProduk)
         rvProduk = findViewById(R.id.rvDataProduk)
+        val imageBack = findViewById<android.widget.ImageView>(R.id.imageBack)
+        imageBack.setOnClickListener {
+            finish()
+        }
 
         rvProduk.layoutManager = LinearLayoutManager(this)
         listProduk = ArrayList()

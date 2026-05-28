@@ -5,14 +5,14 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".Transaksi.TransaksiActivity"
-    android:background="#1A1A2E">
+    android:background="@color/bgScreen"
+    tools:context=".Transaksi.TransaksiActivity">
 
     <androidx.cardview.widget.CardView
         android:id="@+id/cardHeader"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:backgroundTint="#16213E"
+        android:backgroundTint="@color/bgCard"
         app:cardElevation="2dp"
         app:layout_constraintTop_toTopOf="parent">
 
@@ -27,7 +27,7 @@
                 android:layout_width="42dp"
                 android:layout_height="42dp"
                 android:layout_marginStart="20dp"
-                android:backgroundTint="#0F3460"
+                android:backgroundTint="@color/bgCardInner"
                 android:clickable="true"
                 android:focusable="true"
                 app:cardCornerRadius="14dp"
@@ -42,7 +42,7 @@
                     android:layout_height="20dp"
                     android:layout_gravity="center"
                     android:src="@drawable/back"
-                    app:tint="#FFFFFF" />
+                    app:tint="@color/textPrimary" />
             </androidx.cardview.widget.CardView>
 
             <SearchView
@@ -51,10 +51,10 @@
                 android:layout_height="50dp"
                 android:layout_marginStart="16dp"
                 android:layout_marginEnd="20dp"
+                android:background="@drawable/rounded_edittext"
+                android:backgroundTint="@color/bgCardInner"
                 android:iconifiedByDefault="false"
                 android:queryHint="Cari Produk"
-                android:background="@drawable/rounded_edittext"
-                android:backgroundTint="#1A1A2E"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@id/cardBack"
@@ -63,63 +63,64 @@
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.cardview.widget.CardView>
 
-    <!-- BRANCH AND CATEGORY SELECTORS -->
+    <!-- BRANCH SELECTOR -->
     <TextView
         android:id="@+id/tvLabelCabang"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="20dp"
         android:layout_marginTop="12dp"
+        android:letterSpacing="0.05"
         android:text="PILIH CABANG"
-        android:textColor="#B0B0C0"
+        android:textColor="@color/textSecondary"
         android:textSize="11sp"
         android:textStyle="bold"
-        android:letterSpacing="0.05"
-        app:layout_constraintTop_toBottomOf="@id/cardHeader"
-        app:layout_constraintStart_toStartOf="parent"/>
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/cardHeader" />
 
     <HorizontalScrollView
         android:id="@+id/scrollCabang"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="6dp"
-        android:scrollbars="none"
-        android:paddingHorizontal="20dp"
         android:clipToPadding="false"
+        android:paddingHorizontal="20dp"
+        android:scrollbars="none"
         app:layout_constraintTop_toBottomOf="@id/tvLabelCabang">
 
         <com.google.android.material.chip.ChipGroup
             android:id="@+id/cgCabang"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            app:selectionRequired="true"
             app:singleLine="true"
-            app:singleSelection="true"
-            app:selectionRequired="true" />
+            app:singleSelection="true" />
     </HorizontalScrollView>
 
+    <!-- CATEGORY SELECTOR -->
     <TextView
         android:id="@+id/tvLabelKategori"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="20dp"
         android:layout_marginTop="12dp"
+        android:letterSpacing="0.05"
         android:text="FILTER KATEGORI"
-        android:textColor="#B0B0C0"
+        android:textColor="@color/textSecondary"
         android:textSize="11sp"
         android:textStyle="bold"
-        android:letterSpacing="0.05"
         android:visibility="gone"
-        app:layout_constraintTop_toBottomOf="@id/scrollCabang"
-        app:layout_constraintStart_toStartOf="parent"/>
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/scrollCabang" />
 
     <HorizontalScrollView
         android:id="@+id/scrollKategori"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="6dp"
-        android:scrollbars="none"
-        android:paddingHorizontal="20dp"
         android:clipToPadding="false"
+        android:paddingHorizontal="20dp"
+        android:scrollbars="none"
         android:visibility="gone"
         app:layout_constraintTop_toBottomOf="@id/tvLabelKategori">
 
@@ -127,9 +128,9 @@
             android:id="@+id/cgKategori"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            app:selectionRequired="true"
             app:singleLine="true"
-            app:singleSelection="true"
-            app:selectionRequired="true" />
+            app:singleSelection="true" />
     </HorizontalScrollView>
 
     <TextView
@@ -137,13 +138,13 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Pilih cabang terlebih dahulu"
-        android:textColor="#B0B0C0"
+        android:textColor="@color/textSecondary"
         android:textSize="16sp"
         android:textStyle="bold"
-        app:layout_constraintTop_toBottomOf="@id/scrollCabang"
         app:layout_constraintBottom_toTopOf="@id/cardSummary"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:layout_constraintTop_toBottomOf="@id/scrollCabang" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvProdukTransaksi"
@@ -151,8 +152,8 @@
         android:layout_height="0dp"
         android:layout_marginHorizontal="12dp"
         android:layout_marginTop="12dp"
-        android:paddingBottom="12dp"
         android:clipToPadding="false"
+        android:paddingBottom="12dp"
         android:visibility="gone"
         app:layout_constraintBottom_toTopOf="@id/cardSummary"
         app:layout_constraintTop_toBottomOf="@id/scrollKategori"
@@ -162,15 +163,15 @@
         android:id="@+id/cardSummary"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="#0D0D1A"
+        android:background="@color/bgCard"
         app:layout_constraintBottom_toBottomOf="parent">
 
         <View
             android:id="@+id/borderTopSummary"
             android:layout_width="match_parent"
             android:layout_height="1dp"
-            android:background="#0F3460"
-            app:layout_constraintTop_toTopOf="parent"/>
+            android:background="@color/strokeCard"
+            app:layout_constraintTop_toTopOf="parent" />
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
@@ -183,7 +184,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Total Item"
-                android:textColor="#B0B0C0"
+                android:textColor="@color/textSecondary"
                 android:textSize="14sp"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
@@ -193,7 +194,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="0"
-                android:textColor="#FFFFFF"
+                android:textColor="@color/textPrimary"
                 android:textSize="16sp"
                 android:textStyle="bold"
                 app:layout_constraintStart_toStartOf="parent"
@@ -204,7 +205,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Total Harga"
-                android:textColor="#B0B0C0"
+                android:textColor="@color/textSecondary"
                 android:textSize="14sp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
@@ -214,7 +215,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Rp 0"
-                android:textColor="#00D4AA"
+                android:textColor="@color/color_akun"
                 android:textSize="20sp"
                 android:textStyle="bold"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -226,11 +227,11 @@
                 android:layout_height="56dp"
                 android:layout_marginTop="16dp"
                 android:background="@drawable/bg_btn_proses"
-                app:backgroundTint="@null"
                 android:text="Proses Transaksi"
-                android:textColor="#FFFFFF"
+                android:textColor="@color/white"
                 android:textSize="16sp"
                 android:textStyle="bold"
+                app:backgroundTint="@null"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/tvTotalHarga" />

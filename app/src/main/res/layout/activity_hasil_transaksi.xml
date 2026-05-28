@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".Transaksi.HasilTransaksiActivity"
-    android:background="#1A1A2E">
+    android:background="@color/bgScreen">
 
     <ScrollView
         android:layout_width="match_parent"
@@ -25,8 +25,9 @@
                 android:layout_height="wrap_content"
                 app:cardCornerRadius="16dp"
                 app:cardElevation="4dp"
-                app:cardBackgroundColor="#FFFFFF"
-                app:strokeWidth="0dp"
+                app:cardBackgroundColor="@color/bgCard"
+                app:strokeWidth="1dp"
+                app:strokeColor="@color/strokeCard"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent">
@@ -52,7 +53,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="12dp"
                         android:text="Point Of Sales"
-                        android:textColor="#000000"
+                        android:textColor="@color/textPrimary"
                         android:textSize="20sp"
                         android:textStyle="bold"
                         app:layout_constraintEnd_toEndOf="parent"
@@ -66,7 +67,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="4dp"
                         android:text="Cabang"
-                        android:textColor="#333333"
+                        android:textColor="@color/textPrimary"
                         android:textSize="14sp"
                         android:textStyle="bold"
                         app:layout_constraintEnd_toEndOf="parent"
@@ -81,7 +82,7 @@
                         android:layout_marginTop="4dp"
                         android:gravity="center"
                         android:text="Alamat Cabang"
-                        android:textColor="#555555"
+                        android:textColor="@color/textSecondary"
                         android:textSize="12sp"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
@@ -94,7 +95,7 @@
                         android:layout_marginTop="16dp"
                         android:gravity="center"
                         android:text="- - - - - - - - - - - - - - - - - - - - - - - - - - - - - -"
-                        android:textColor="#555555"
+                        android:textColor="@color/textSecondary"
                         android:textSize="12sp"
                         app:layout_constraintTop_toBottomOf="@id/tvAlamatToko" />
 
@@ -105,7 +106,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="16dp"
                         android:text="ID Transaksi"
-                        android:textColor="#555555"
+                        android:textColor="@color/textSecondary"
                         android:textSize="13sp"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="@id/separator1" />
@@ -115,7 +116,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="#TRX-00000000"
-                        android:textColor="#000000"
+                        android:textColor="@color/textPrimary"
                         android:textSize="13sp"
                         android:textStyle="bold"
                         app:layout_constraintEnd_toEndOf="parent"
@@ -128,7 +129,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="8dp"
                         android:text="Tanggal &amp; Waktu"
-                        android:textColor="#555555"
+                        android:textColor="@color/textSecondary"
                         android:textSize="13sp"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="@id/tvLabelIdTransaksi" />
@@ -138,7 +139,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="-"
-                        android:textColor="#000000"
+                        android:textColor="@color/textPrimary"
                         android:textSize="13sp"
                         android:textStyle="bold"
                         app:layout_constraintEnd_toEndOf="parent"
@@ -151,7 +152,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="8dp"
                         android:text="Kasir Bertugas"
-                        android:textColor="#555555"
+                        android:textColor="@color/textSecondary"
                         android:textSize="13sp"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="@id/tvLabelTanggal" />
@@ -161,7 +162,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="-"
-                        android:textColor="#000000"
+                        android:textColor="@color/textPrimary"
                         android:textSize="13sp"
                         android:textStyle="bold"
                         app:layout_constraintEnd_toEndOf="parent"
@@ -174,7 +175,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="8dp"
                         android:text="Nomor HP Kasir"
-                        android:textColor="#555555"
+                        android:textColor="@color/textSecondary"
                         android:textSize="13sp"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="@id/tvLabelKasir" />
@@ -184,7 +185,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="-"
-                        android:textColor="#000000"
+                        android:textColor="@color/textPrimary"
                         android:textSize="13sp"
                         android:textStyle="bold"
                         app:layout_constraintEnd_toEndOf="parent"
@@ -197,7 +198,7 @@
                         android:layout_marginTop="16dp"
                         android:gravity="center"
                         android:text="- - - - - - - - - - - - - - - - - - - - - - - - - - - - - -"
-                        android:textColor="#555555"
+                        android:textColor="@color/textSecondary"
                         android:textSize="12sp"
                         app:layout_constraintTop_toBottomOf="@id/tvLabelHpKasir" />
 
@@ -217,7 +218,7 @@
                         android:layout_marginTop="12dp"
                         android:gravity="center"
                         android:text="- - - - - - - - - - - - - - - - - - - - - - - - - - - - - -"
-                        android:textColor="#555555"
+                        android:textColor="@color/textSecondary"
                         android:textSize="12sp"
                         app:layout_constraintTop_toBottomOf="@id/rvStrukItems" />
 
@@ -228,7 +229,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="16dp"
                         android:text="Subtotal"
-                        android:textColor="#555555"
+                        android:textColor="@color/textSecondary"
                         android:textSize="13sp"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="@id/separator3" />
@@ -238,7 +239,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Rp 0"
-                        android:textColor="#000000"
+                        android:textColor="@color/textPrimary"
                         android:textSize="13sp"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintTop_toTopOf="@id/tvLabelSubtotal" />
@@ -249,7 +250,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="8dp"
                         android:text="PPN (11%)"
-                        android:textColor="#555555"
+                        android:textColor="@color/textSecondary"
                         android:textSize="13sp"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="@id/tvLabelSubtotal" />
@@ -259,7 +260,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Rp 0"
-                        android:textColor="#000000"
+                        android:textColor="@color/textPrimary"
                         android:textSize="13sp"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintTop_toTopOf="@id/tvLabelPpn" />
@@ -270,7 +271,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="12dp"
                         android:text="Total"
-                        android:textColor="#000000"
+                        android:textColor="@color/textPrimary"
                         android:textSize="16sp"
                         android:textStyle="bold"
                         app:layout_constraintStart_toStartOf="parent"
@@ -281,7 +282,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Rp 0"
-                        android:textColor="#000000"
+                        android:textColor="@color/textPrimary"
                         android:textSize="18sp"
                         android:textStyle="bold"
                         app:layout_constraintEnd_toEndOf="parent"
@@ -293,7 +294,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="8dp"
                         android:text="Nominal Bayar"
-                        android:textColor="#555555"
+                        android:textColor="@color/textSecondary"
                         android:textSize="13sp"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="@id/tvLabelTotal" />
@@ -303,7 +304,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Rp 0"
-                        android:textColor="#000000"
+                        android:textColor="@color/textPrimary"
                         android:textSize="13sp"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintTop_toTopOf="@id/tvLabelBayar" />
@@ -314,7 +315,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="8dp"
                         android:text="Kembalian"
-                        android:textColor="#555555"
+                        android:textColor="@color/textSecondary"
                         android:textSize="13sp"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="@id/tvLabelBayar" />
@@ -337,7 +338,7 @@
                         android:layout_marginTop="16dp"
                         android:gravity="center"
                         android:text="- - - - - - - - - - - - - - - - - - - - - - - - - - - - - -"
-                        android:textColor="#555555"
+                        android:textColor="@color/textSecondary"
                         android:textSize="12sp"
                         app:layout_constraintTop_toBottomOf="@id/tvLabelKembalian" />
 
@@ -349,7 +350,7 @@
                         android:layout_marginTop="16dp"
                         android:gravity="center"
                         android:text="Terima kasih telah berbelanja di Point Of Sales!\nSampai jumpa kembali 😊"
-                        android:textColor="#555555"
+                        android:textColor="@color/textSecondary"
                         android:textSize="12sp"
                         app:layout_constraintTop_toBottomOf="@id/separator4" />
 
@@ -360,7 +361,7 @@
                         android:layout_marginTop="8dp"
                         android:gravity="center"
                         android:text="Contact: -"
-                        android:textColor="#888888"
+                        android:textColor="@color/textHint"
                         android:textSize="11sp"
                         app:layout_constraintTop_toBottomOf="@id/tvStrukFooter" />
 
@@ -399,7 +400,7 @@
                     android:background="@drawable/bg_btn_secondary"
                     app:backgroundTint="@null"
                     android:text="Transaksi Baru"
-                    android:textColor="#FFFFFF"
+                    android:textColor="@color/accentPurple"
                     android:textSize="14sp"
                     android:textStyle="bold"
                     app:layout_constraintTop_toBottomOf="@id/btnPrint"

@@ -16,8 +16,8 @@
     <color name="red_status">#F44336</color>
     <color name="TeksBawahNavbar">#000000</color>
     <color name="icon">#000000</color>
-    <color name="CardKategori">#000000</color>
-    <color name="IconKategori">#ffffff</color>
+    <color name="CardKategori">#EEEDFE</color>
+    <color name="IconKategori">#4F46E5</color>
 
 
     //Untuk kategori
@@ -31,4 +31,15 @@
     //Untuk Produk
     <color name="BackgroundCardProduk">#FFFFFF</color>
     <color name="IconProduk">#000000</color>
+
+    <color name="bgScreen">#F0F2FF</color>
+    <color name="bgCard">#FFFFFF</color>
+    <color name="bgCardInner">#F5F6FF</color>
+    <color name="strokeCard">#E0E2F0</color>
+    <color name="textPrimary">#1A1D35</color>
+    <color name="textSecondary">#6B70A0</color>
+    <color name="textHint">#ABAEC8</color>
+    <color name="accentPurple">#4F46E5</color>
+    <color name="iconBg">#EEEDFE</color>
+    <color name="iconColor">#4F46E5</color>
 </resources>

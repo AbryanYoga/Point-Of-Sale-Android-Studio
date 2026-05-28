@@ -89,9 +89,11 @@ class TransaksiAdapter(
     private fun updateCardColor(card: View, jumlah: Int) {
         val cardView = card as? com.google.android.material.card.MaterialCardView
         if (jumlah > 0) {
-            cardView?.setCardBackgroundColor(Color.parseColor("#1F2E54")) // highlight selection
+            val selectedColor = androidx.core.content.ContextCompat.getColor(card.context, R.color.CardKategori)
+            cardView?.setCardBackgroundColor(selectedColor) // highlight selection
         } else {
-            cardView?.setCardBackgroundColor(Color.parseColor("#16213E")) // default navy
+            val defaultColor = androidx.core.content.ContextCompat.getColor(card.context, R.color.bgCard)
+            cardView?.setCardBackgroundColor(defaultColor) // default theme background
         }
     }
 

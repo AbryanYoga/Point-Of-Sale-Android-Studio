@@ -57,89 +57,175 @@ class ModProduk : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         enableEdgeToEdge()
+
         setContentView(R.layout.activity_mod_produk)
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
+
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
+
+            v.setPadding(
+                systemBars.left,
+                systemBars.top,
+                systemBars.right,
+                systemBars.bottom
+            )
+
             insets
         }
 
         init()
+
         setupSpinner()
+
         setupFormatHarga()
+
         loadKategori()
+
         loadCabang()
 
         editProduk = intent.getSerializableExtra("produk") as? ModelProduk
+
         if (editProduk != null) {
+
             val data = editProduk!!
-            val formatRupiah = NumberFormat.getNumberInstance(Locale("id", "ID"))
+
+            val formatRupiah = NumberFormat.getNumberInstance(
+                Locale("id", "ID")
+            )
+
             etImageUrl.setText(data.imageUrl)
-            if (data.imageUrl.isNotEmpty()) {
-                Glide.with(this)
-                    .load(data.imageUrl)
-                    .placeholder(R.drawable.produk)
-                    .error(R.drawable.produk)
-                    .into(imgPreview)
-            }
+
             etNamaProduk.setText(data.nama)
-            etHargaProduk.setText(formatRupiah.format(data.harga))
+
+            etHargaProduk.setText(
+                formatRupiah.format(data.harga)
+            )
+
             etStock.setText(data.stok.toString())
-            val statusList = arrayOf("-- Pilih Status --", "Aktif", "Non Aktif")
-            spinnerStatus.setSelection(statusList.indexOf(data.status).takeIf { it >= 0 } ?: 0)
+
+            val statusList = arrayOf(
+                "-- Pilih Status --",
+                "Aktif",
+                "Non Aktif"
+            )
+
+            spinnerStatus.setSelection(
+                statusList.indexOf(data.status)
+                    .takeIf { it >= 0 } ?: 0
+            )
+
             btnHapus.visibility = View.VISIBLE
+
+            if (data.imageUrl.isNotEmpty()) {
+                loadImage(data.imageUrl)
+            }
+
         } else {
+
             btnHapus.visibility = View.GONE
         }
 
         cgKategori.setOnCheckedStateChangeListener { group, checkedIds ->
+
             selectedKategori = if (checkedIds.isNotEmpty()) {
-                group.findViewById<com.google.android.material.chip.Chip>(checkedIds[0])?.text?.toString() ?: ""
-            } else ""
+
+                group.findViewById<com.google.android.material.chip.Chip>(
+                    checkedIds[0]
+                )?.text?.toString() ?: ""
+
+            } else {
+                ""
+            }
         }
 
         cgCabang.setOnCheckedStateChangeListener { group, checkedIds ->
+
             selectedCabang = if (checkedIds.isNotEmpty()) {
-                group.findViewById<com.google.android.material.chip.Chip>(checkedIds[0])?.text?.toString() ?: ""
-            } else ""
+
+                group.findViewById<com.google.android.material.chip.Chip>(
+                    checkedIds[0]
+                )?.text?.toString() ?: ""
+
+            } else {
+                ""
+            }
         }
 
-        cardBack.setOnClickListener { finish() }
-        btnSimpan.setOnClickListener { simpan() }
-        btnHapus.setOnClickListener { hapus() }
+        cardBack.setOnClickListener {
+            finish()
+        }
+
+        btnSimpan.setOnClickListener {
+            simpan()
+        }
+
+        btnHapus.setOnClickListener {
+            hapus()
+        }
 
         btnPreviewGambar.setOnClickListener {
+
             val url = etImageUrl.text.toString().trim()
+
             if (url.isEmpty()) {
-                Toast.makeText(this, "Masukkan URL gambar terlebih dahulu", Toast.LENGTH_SHORT).show()
-            } else {
-                Glide.with(this)
-                    .load(url)
-                    .placeholder(R.drawable.produk)
-                    .error(R.drawable.produk)
-                    .into(imgPreview)
+
+                Toast.makeText(
+                    this,
+                    "Masukkan URL gambar terlebih dahulu",
+                    Toast.LENGTH_SHORT
+                ).show()
+
+                return@setOnClickListener
             }
+
+            loadImage(url)
         }
     }
 
-    private fun buatChip(teks: String): com.google.android.material.chip.Chip {
+    private fun loadImage(url: String) {
+
+        Glide.with(this)
+            .load(url)
+            .placeholder(R.drawable.produk)
+            .error(R.drawable.produk)
+            .into(imgPreview)
+
+        Toast.makeText(
+            this,
+            "Preview gambar dimuat",
+            Toast.LENGTH_SHORT
+        ).show()
+    }
+
+    private fun buatChip(
+        teks: String
+    ): com.google.android.material.chip.Chip {
+
         return com.google.android.material.chip.Chip(this).apply {
+
             text = teks
+
             isCheckable = true
+
             isClickable = true
+
             id = View.generateViewId()
-            chipBackgroundColor = android.content.res.ColorStateList(
-                arrayOf(
-                    intArrayOf(android.R.attr.state_checked),
-                    intArrayOf(-android.R.attr.state_checked)
-                ),
-                intArrayOf(
-                    android.graphics.Color.parseColor("#4F46E5"),
-                    android.graphics.Color.parseColor("#2A2A3E")
+
+            chipBackgroundColor =
+                android.content.res.ColorStateList(
+                    arrayOf(
+                        intArrayOf(android.R.attr.state_checked),
+                        intArrayOf(-android.R.attr.state_checked)
+                    ),
+                    intArrayOf(
+                        android.graphics.Color.parseColor("#4F46E5"),
+                        android.graphics.Color.parseColor("#2A2A3E")
+                    )
                 )
-            )
+
             setTextColor(
                 android.content.res.ColorStateList(
                     arrayOf(
@@ -156,178 +242,398 @@ class ModProduk : AppCompatActivity() {
     }
 
     private fun loadKategori() {
-        kategoriRef.addValueEventListener(object : ValueEventListener {
-            override fun onDataChange(snapshot: DataSnapshot) {
-                cgKategori.removeAllViews()
-                var hasData = false
-                for (data in snapshot.children) {
-                    val kategori = data.getValue(ModelKategori::class.java)
-                    if (kategori != null && kategori.statusKategori == "Aktif") {
-                        val name = kategori.namaKategori ?: continue
-                        hasData = true
-                        val chip = buatChip(name).apply {
-                            if (editProduk != null && editProduk!!.jenis == name) {
-                                isChecked = true
-                                selectedKategori = name
+
+        kategoriRef.addValueEventListener(
+            object : ValueEventListener {
+
+                override fun onDataChange(snapshot: DataSnapshot) {
+
+                    cgKategori.removeAllViews()
+
+                    var hasData = false
+
+                    for (data in snapshot.children) {
+
+                        val kategori =
+                            data.getValue(ModelKategori::class.java)
+
+                        if (kategori != null &&
+                            kategori.statusKategori == "Aktif"
+                        ) {
+
+                            val name =
+                                kategori.namaKategori ?: continue
+
+                            hasData = true
+
+                            val chip = buatChip(name).apply {
+
+                                if (editProduk != null &&
+                                    editProduk!!.jenis == name
+                                ) {
+
+                                    isChecked = true
+
+                                    selectedKategori = name
+                                }
                             }
+
+                            cgKategori.addView(chip)
                         }
-                        cgKategori.addView(chip)
+                    }
+
+                    if (hasData) {
+
+                        tvEmptyKategori.visibility = View.GONE
+
+                        findViewById<View>(
+                            R.id.scrollJenis
+                        ).visibility = View.VISIBLE
+
+                    } else {
+
+                        tvEmptyKategori.visibility = View.VISIBLE
+
+                        findViewById<View>(
+                            R.id.scrollJenis
+                        ).visibility = View.GONE
                     }
                 }
-                if (hasData) {
-                    tvEmptyKategori.visibility = View.GONE
-                    findViewById<View>(R.id.scrollJenis).visibility = View.VISIBLE
-                } else {
-                    tvEmptyKategori.visibility = View.VISIBLE
-                    findViewById<View>(R.id.scrollJenis).visibility = View.GONE
+
+                override fun onCancelled(error: DatabaseError) {
+
+                    Toast.makeText(
+                        this@ModProduk,
+                        "Gagal memuat kategori",
+                        Toast.LENGTH_SHORT
+                    ).show()
                 }
             }
-
-            override fun onCancelled(error: DatabaseError) {
-                Toast.makeText(this@ModProduk, "Gagal memuat kategori", Toast.LENGTH_SHORT).show()
-            }
-        })
+        )
     }
 
     private fun loadCabang() {
-        cabangRef.addValueEventListener(object : ValueEventListener {
-            override fun onDataChange(snapshot: DataSnapshot) {
-                cgCabang.removeAllViews()
-                var hasData = false
-                for (data in snapshot.children) {
-                    val cabang = data.getValue(ModelCabang::class.java)
-                    if (cabang != null && cabang.statusCabang == "Aktif") {
-                        val name = cabang.namaCabang ?: continue
-                        hasData = true
-                        val chip = buatChip(name).apply {
-                            if (editProduk != null && editProduk!!.cabang == name) {
-                                isChecked = true
-                                selectedCabang = name
+
+        cabangRef.addValueEventListener(
+            object : ValueEventListener {
+
+                override fun onDataChange(snapshot: DataSnapshot) {
+
+                    cgCabang.removeAllViews()
+
+                    var hasData = false
+
+                    for (data in snapshot.children) {
+
+                        val cabang =
+                            data.getValue(ModelCabang::class.java)
+
+                        if (cabang != null &&
+                            cabang.statusCabang == "Aktif"
+                        ) {
+
+                            val name =
+                                cabang.namaCabang ?: continue
+
+                            hasData = true
+
+                            val chip = buatChip(name).apply {
+
+                                if (editProduk != null &&
+                                    editProduk!!.cabang == name
+                                ) {
+
+                                    isChecked = true
+
+                                    selectedCabang = name
+                                }
                             }
+
+                            cgCabang.addView(chip)
                         }
-                        cgCabang.addView(chip)
+                    }
+
+                    if (hasData) {
+
+                        tvEmptyCabang.visibility = View.GONE
+
+                        findViewById<View>(
+                            R.id.scrollCabang
+                        ).visibility = View.VISIBLE
+
+                    } else {
+
+                        tvEmptyCabang.visibility = View.VISIBLE
+
+                        findViewById<View>(
+                            R.id.scrollCabang
+                        ).visibility = View.GONE
                     }
                 }
-                if (hasData) {
-                    tvEmptyCabang.visibility = View.GONE
-                    findViewById<View>(R.id.scrollCabang).visibility = View.VISIBLE
-                } else {
-                    tvEmptyCabang.visibility = View.VISIBLE
-                    findViewById<View>(R.id.scrollCabang).visibility = View.GONE
+
+                override fun onCancelled(error: DatabaseError) {
+
+                    Toast.makeText(
+                        this@ModProduk,
+                        "Gagal memuat cabang",
+                        Toast.LENGTH_SHORT
+                    ).show()
                 }
             }
-
-            override fun onCancelled(error: DatabaseError) {
-                Toast.makeText(this@ModProduk, "Gagal memuat cabang", Toast.LENGTH_SHORT).show()
-            }
-        })
+        )
     }
 
     private fun hapus() {
+
         val idHapus = editProduk?.id ?: return
+
         AlertDialog.Builder(this)
             .setTitle("Hapus Data")
-            .setMessage("Apakah Anda yakin ingin menghapus data ini? Tindakan ini tidak dapat dibatalkan.")
+            .setMessage(
+                "Apakah Anda yakin ingin menghapus data ini?"
+            )
             .setPositiveButton("Hapus") { _, _ ->
-                myRef.child(idHapus).removeValue()
+
+                myRef.child(idHapus)
+                    .removeValue()
                     .addOnSuccessListener {
-                        Toast.makeText(this, "Data berhasil dihapus", Toast.LENGTH_SHORT).show()
+
+                        Toast.makeText(
+                            this,
+                            "Data berhasil dihapus",
+                            Toast.LENGTH_SHORT
+                        ).show()
+
                         finish()
                     }
                     .addOnFailureListener { e ->
-                        Toast.makeText(this, "Gagal menghapus: ${e.message}", Toast.LENGTH_SHORT).show()
+
+                        Toast.makeText(
+                            this,
+                            "Gagal menghapus: ${e.message}",
+                            Toast.LENGTH_SHORT
+                        ).show()
                     }
             }
-            .setNegativeButton("Batal") { dialog, _ -> dialog.dismiss() }
+            .setNegativeButton("Batal") { dialog, _ ->
+                dialog.dismiss()
+            }
             .show()
     }
 
     private fun init() {
+
         cardBack = findViewById(R.id.cardBack)
+
         etImageUrl = findViewById(R.id.etImageUrl)
-        btnPreviewGambar = findViewById(R.id.btnPreviewGambar)
+
+        btnPreviewGambar =
+            findViewById(R.id.btnPreviewGambar)
+
         imgPreview = findViewById(R.id.imgPreview)
-        etNamaProduk = findViewById(R.id.etNamaKategori)
-        etHargaProduk = findViewById(R.id.etHargaProduk)
-        etStock = findViewById(R.id.etStock)
-        cgKategori = findViewById(R.id.cgKategori)
-        cgCabang = findViewById(R.id.cgCabang)
-        tvEmptyKategori = findViewById(R.id.tvEmptyKategori)
-        tvEmptyCabang = findViewById(R.id.tvEmptyCabang)
-        spinnerStatus = findViewById(R.id.spinnerStatus)
-        btnSimpan = findViewById(R.id.btnSimpan)
-        btnHapus = findViewById(R.id.btnHapus)
+
+        etNamaProduk =
+            findViewById(R.id.etNamaKategori)
+
+        etHargaProduk =
+            findViewById(R.id.etHargaProduk)
+
+        etStock =
+            findViewById(R.id.etStock)
+
+        cgKategori =
+            findViewById(R.id.cgKategori)
+
+        cgCabang =
+            findViewById(R.id.cgCabang)
+
+        tvEmptyKategori =
+            findViewById(R.id.tvEmptyKategori)
+
+        tvEmptyCabang =
+            findViewById(R.id.tvEmptyCabang)
+
+        spinnerStatus =
+            findViewById(R.id.spinnerStatus)
+
+        btnSimpan =
+            findViewById(R.id.btnSimpan)
+
+        btnHapus =
+            findViewById(R.id.btnHapus)
     }
 
     private fun setupSpinner() {
-        val statusItems = arrayOf("-- Pilih Status --", "Aktif", "Non Aktif")
-        val statusAdapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, statusItems)
-        statusAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+
+        val statusItems = arrayOf(
+            "-- Pilih Status --",
+            "Aktif",
+            "Non Aktif"
+        )
+
+        val statusAdapter = ArrayAdapter(
+            this,
+            android.R.layout.simple_spinner_item,
+            statusItems
+        )
+
+        statusAdapter.setDropDownViewResource(
+            android.R.layout.simple_spinner_dropdown_item
+        )
+
         spinnerStatus.adapter = statusAdapter
+
         spinnerStatus.setSelection(0)
     }
 
     private fun setupFormatHarga() {
-        etHargaProduk.addTextChangedListener(object : TextWatcher {
-            private var isEditing = false
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
-            override fun afterTextChanged(s: Editable?) {
-                if (isEditing) return
-                isEditing = true
-                val input = s.toString().replace(".", "").replace(",", "")
-                if (input.isNotEmpty()) {
-                    val number = input.toLongOrNull() ?: 0L
-                    val formatted = NumberFormat.getNumberInstance(Locale("id", "ID")).format(number)
-                    etHargaProduk.setText(formatted)
-                    etHargaProduk.setSelection(formatted.length)
+
+        etHargaProduk.addTextChangedListener(
+            object : TextWatcher {
+
+                private var isEditing = false
+
+                override fun beforeTextChanged(
+                    s: CharSequence?,
+                    start: Int,
+                    count: Int,
+                    after: Int
+                ) {
                 }
-                isEditing = false
+
+                override fun onTextChanged(
+                    s: CharSequence?,
+                    start: Int,
+                    before: Int,
+                    count: Int
+                ) {
+                }
+
+                override fun afterTextChanged(s: Editable?) {
+
+                    if (isEditing) return
+
+                    isEditing = true
+
+                    val input = s.toString()
+                        .replace(".", "")
+                        .replace(",", "")
+
+                    if (input.isNotEmpty()) {
+
+                        val number =
+                            input.toLongOrNull() ?: 0L
+
+                        val formatted =
+                            NumberFormat.getNumberInstance(
+                                Locale("id", "ID")
+                            ).format(number)
+
+                        etHargaProduk.setText(formatted)
+
+                        etHargaProduk.setSelection(
+                            formatted.length
+                        )
+                    }
+
+                    isEditing = false
+                }
             }
-        })
+        )
     }
 
     private fun simpan() {
-        val imageUrl = etImageUrl.text.toString().trim()
-        val nama = etNamaProduk.text.toString().trim()
-        val harga = etHargaProduk.text.toString().replace(".", "").toLongOrNull() ?: 0L
-        val stok = etStock.text.toString().trim()
+
+        val imageUrl =
+            etImageUrl.text.toString().trim()
+
+        val nama =
+            etNamaProduk.text.toString().trim()
+
+        val harga =
+            etHargaProduk.text.toString()
+                .replace(".", "")
+                .toLongOrNull() ?: 0L
+
+        val stok =
+            etStock.text.toString().trim()
+
         val jenis = selectedKategori
+
         val cabang = selectedCabang
-        val status = spinnerStatus.selectedItem?.toString() ?: ""
+
+        val status =
+            spinnerStatus.selectedItem?.toString() ?: ""
 
         if (nama.isEmpty()) {
-            etNamaProduk.error = "Nama produk tidak boleh kosong"
+
+            etNamaProduk.error =
+                "Nama produk tidak boleh kosong"
+
             etNamaProduk.requestFocus()
+
             return
         }
+
         if (harga == 0L) {
-            etHargaProduk.error = "Harga tidak boleh kosong"
+
+            etHargaProduk.error =
+                "Harga tidak boleh kosong"
+
             etHargaProduk.requestFocus()
+
             return
         }
+
         if (stok.isEmpty()) {
-            etStock.error = "Stok tidak boleh kosong"
+
+            etStock.error =
+                "Stok tidak boleh kosong"
+
             etStock.requestFocus()
+
             return
         }
+
         if (jenis.isEmpty()) {
-            Toast.makeText(this, "Pilih kategori produk terlebih dahulu", Toast.LENGTH_SHORT).show()
+
+            Toast.makeText(
+                this,
+                "Pilih kategori terlebih dahulu",
+                Toast.LENGTH_SHORT
+            ).show()
+
             return
         }
+
         if (cabang.isEmpty()) {
-            Toast.makeText(this, "Pilih cabang terlebih dahulu", Toast.LENGTH_SHORT).show()
+
+            Toast.makeText(
+                this,
+                "Pilih cabang terlebih dahulu",
+                Toast.LENGTH_SHORT
+            ).show()
+
             return
         }
-        if (status == "-- Pilih Status --" || status.isEmpty()) {
-            Toast.makeText(this, "Pilih status terlebih dahulu", Toast.LENGTH_SHORT).show()
+
+        if (status == "-- Pilih Status --") {
+
+            Toast.makeText(
+                this,
+                "Pilih status terlebih dahulu",
+                Toast.LENGTH_SHORT
+            ).show()
+
             return
         }
 
         btnSimpan.isEnabled = false
 
         if (editProduk != null) {
+
             val produkId = editProduk!!.id
+
             val produkData = hashMapOf<String, Any>(
                 "id" to produkId,
                 "nama" to nama,
@@ -338,22 +644,47 @@ class ModProduk : AppCompatActivity() {
                 "status" to status,
                 "imageUrl" to imageUrl
             )
-            myRef.child(produkId).updateChildren(produkData)
+
+            myRef.child(produkId)
+                .updateChildren(produkData)
                 .addOnSuccessListener {
-                    Toast.makeText(this, "Produk berhasil diupdate", Toast.LENGTH_SHORT).show()
+
+                    Toast.makeText(
+                        this,
+                        "Produk berhasil diupdate",
+                        Toast.LENGTH_SHORT
+                    ).show()
+
                     finish()
                 }
                 .addOnFailureListener { error ->
+
                     btnSimpan.isEnabled = true
-                    Toast.makeText(this, "Gagal update: ${error.message}", Toast.LENGTH_SHORT).show()
+
+                    Toast.makeText(
+                        this,
+                        "Gagal update: ${error.message}",
+                        Toast.LENGTH_SHORT
+                    ).show()
                 }
+
         } else {
+
             val produkBaru = myRef.push()
+
             val produkId = produkBaru.key ?: run {
-                Toast.makeText(this, "Gagal generate ID", Toast.LENGTH_SHORT).show()
+
+                Toast.makeText(
+                    this,
+                    "Gagal generate ID",
+                    Toast.LENGTH_SHORT
+                ).show()
+
                 btnSimpan.isEnabled = true
+
                 return
             }
+
             val produkData = hashMapOf<String, Any>(
                 "id" to produkId,
                 "nama" to nama,
@@ -364,14 +695,27 @@ class ModProduk : AppCompatActivity() {
                 "status" to status,
                 "imageUrl" to imageUrl
             )
+
             produkBaru.setValue(produkData)
                 .addOnSuccessListener {
-                    Toast.makeText(this, "Produk berhasil disimpan", Toast.LENGTH_SHORT).show()
+
+                    Toast.makeText(
+                        this,
+                        "Produk berhasil disimpan",
+                        Toast.LENGTH_SHORT
+                    ).show()
+
                     finish()
                 }
                 .addOnFailureListener { error ->
+
                     btnSimpan.isEnabled = true
-                    Toast.makeText(this, "Gagal menyimpan: ${error.message}", Toast.LENGTH_SHORT).show()
+
+                    Toast.makeText(
+                        this,
+                        "Gagal menyimpan: ${error.message}",
+                        Toast.LENGTH_SHORT
+                    ).show()
                 }
         }
     }

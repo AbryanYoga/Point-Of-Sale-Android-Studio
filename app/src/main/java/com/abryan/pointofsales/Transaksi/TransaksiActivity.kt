@@ -87,8 +87,10 @@ class TransaksiActivity : AppCompatActivity() {
 
         val searchEditTextId = resources.getIdentifier("android:id/search_src_text", null, null)
         val searchEditText = searchProduk.findViewById<TextView>(searchEditTextId)
-        searchEditText?.setTextColor(Color.WHITE)
-        searchEditText?.setHintTextColor(Color.parseColor("#B0B0C0"))
+        val textPrimaryColor = androidx.core.content.ContextCompat.getColor(this, R.color.textPrimary)
+        val textHintColor = androidx.core.content.ContextCompat.getColor(this, R.color.textHint)
+        searchEditText?.setTextColor(textPrimaryColor)
+        searchEditText?.setHintTextColor(textHintColor)
 
         searchProduk.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String?) = false
@@ -139,7 +141,13 @@ class TransaksiActivity : AppCompatActivity() {
     }
 
     private fun buatChip(teks: String): com.google.android.material.chip.Chip {
-        return com.google.android.material.chip.Chip(this).apply {
+        val context = this
+        val colorChecked = androidx.core.content.ContextCompat.getColor(context, R.color.accentPurple)
+        val colorUnchecked = androidx.core.content.ContextCompat.getColor(context, R.color.bgCardInner)
+        val textChecked = Color.WHITE
+        val textUnchecked = androidx.core.content.ContextCompat.getColor(context, R.color.textSecondary)
+
+        return com.google.android.material.chip.Chip(context).apply {
             text = teks
             isCheckable = true
             isClickable = true
@@ -150,8 +158,8 @@ class TransaksiActivity : AppCompatActivity() {
                     intArrayOf(-android.R.attr.state_checked)
                 ),
                 intArrayOf(
-                    Color.parseColor("#4F46E5"),
-                    Color.parseColor("#2A2A3E")
+                    colorChecked,
+                    colorUnchecked
                 )
             )
             setTextColor(
@@ -161,8 +169,8 @@ class TransaksiActivity : AppCompatActivity() {
                         intArrayOf(-android.R.attr.state_checked)
                     ),
                     intArrayOf(
-                        Color.WHITE,
-                        Color.parseColor("#B0B0C0")
+                        textChecked,
+                        textUnchecked
                     )
                 )
             )
