@@ -3,6 +3,7 @@ package com.abryan.pointofsales.Produk
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import android.view.View
 import android.widget.ArrayAdapter
 import android.widget.Button
@@ -17,19 +18,33 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.cardview.widget.CardView
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import coil.ImageLoader
+import coil.load
+import coil.request.CachePolicy
+import coil.transform.RoundedCornersTransformation
 import com.abryan.pointofsales.R
 import com.abryan.pointofsales.model.ModelCabang
 import com.abryan.pointofsales.model.ModelKategori
 import com.abryan.pointofsales.model.ModelProduk
+import com.abryan.pointofsales.utils.UnsafeOkHttpClient
 import com.bumptech.glide.Glide
+import com.bumptech.glide.integration.okhttp3.OkHttpUrlLoader
+import com.bumptech.glide.load.model.GlideUrl
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
+import java.io.InputStream
 import java.text.NumberFormat
 import java.util.Locale
 
 class ModProduk : AppCompatActivity() {
+
+    companion object {
+        private const val TAG = "ModProduk"
+    }
+    
+    private lateinit var imageLoader: ImageLoader
 
     private val database = FirebaseDatabase.getInstance()
     private val myRef = database.getReference("Produk")
@@ -61,6 +76,11 @@ class ModProduk : AppCompatActivity() {
         enableEdgeToEdge()
 
         setContentView(R.layout.activity_mod_produk)
+        
+        // Initialize custom ImageLoader with unsafe OkHttpClient
+        imageLoader = ImageLoader.Builder(this)
+            .okHttpClient(UnsafeOkHttpClient.getUnsafeOkHttpClient())
+            .build()
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
 
@@ -120,7 +140,12 @@ class ModProduk : AppCompatActivity() {
             btnHapus.visibility = View.VISIBLE
 
             if (data.imageUrl.isNotEmpty()) {
-                loadImage(data.imageUrl)
+                imgPreview.visibility = View.VISIBLE
+                imgPreview.load(data.imageUrl) {
+                    crossfade(true)
+                    placeholder(R.drawable.produk)
+                    error(R.drawable.produk)
+                }
             }
 
         } else {
@@ -181,23 +206,212 @@ class ModProduk : AppCompatActivity() {
                 return@setOnClickListener
             }
 
+            // Validasi format URL
+            if (!url.startsWith("http://") && !url.startsWith("https://")) {
+                Toast.makeText(
+                    this,
+                    "URL harus dimulai dengan http:// atau https://",
+                    Toast.LENGTH_SHORT
+                ).show()
+                return@setOnClickListener
+            }
+
+            // Cek jika URL adalah Imgur album/gallery
+            if (url.contains("/a/") || url.contains("/gallery/")) {
+                Toast.makeText(
+                    this,
+                    "❌ URL Imgur Album tidak didukung!\n\nGunakan direct image link:\n• Buka album\n• Klik gambar\n• Copy image address\n• Format: i.imgur.com/xyz.jpg",
+                    Toast.LENGTH_LONG
+                ).show()
+                return@setOnClickListener
+            }
+
+            // Validasi ekstensi gambar atau domain yang dikenal
+            val validExtensions = listOf(".jpg", ".jpeg", ".png", ".webp", ".gif", ".bmp")
+            val trustedDomains = listOf(
+                "imgur.com",
+                "i.imgur.com", 
+                "postimg.cc",
+                "i.postimg.cc",
+                "imgbb.com",
+                "i.imgbb.com",
+                "picsum.photos",
+                "via.placeholder.com",
+                "dummyimage.com",
+                "placeholder.com",
+                "unsplash.com",
+                "images.unsplash.com"
+            )
+            
+            val hasValidExtension = validExtensions.any { url.lowercase().contains(it) }
+            val isTrustedDomain = trustedDomains.any { url.lowercase().contains(it) }
+            
+            if (!hasValidExtension && !isTrustedDomain) {
+                Toast.makeText(
+                    this,
+                    "URL harus:\n• Berakhiran .jpg/.png/.jpeg/.webp\n• Atau dari domain terpercaya (Imgur, PostImg, dll)\n• Bukan album link (/a/ atau /gallery/)",
+                    Toast.LENGTH_LONG
+                ).show()
+            }
+
             loadImage(url)
         }
     }
 
     private fun loadImage(url: String) {
 
-        Glide.with(this)
-            .load(url)
-            .placeholder(R.drawable.produk)
-            .error(R.drawable.produk)
-            .into(imgPreview)
+        Log.d(TAG, "Attempting to load image from URL: $url")
+        
+        imgPreview.visibility = View.VISIBLE
 
-        Toast.makeText(
-            this,
-            "Preview gambar dimuat",
-            Toast.LENGTH_SHORT
-        ).show()
+        // Menggunakan Coil dengan custom OkHttpClient yang bypass SSL
+        imgPreview.load(url, imageLoader) {
+            crossfade(true)
+            crossfade(300)
+            placeholder(R.drawable.produk)
+            error(R.drawable.produk)
+            allowHardware(false)
+            memoryCachePolicy(coil.request.CachePolicy.ENABLED)
+            diskCachePolicy(coil.request.CachePolicy.ENABLED)
+            networkCachePolicy(coil.request.CachePolicy.ENABLED)
+            listener(
+                onStart = {
+                    Log.d(TAG, "Started loading image")
+                    runOnUiThread {
+                        Toast.makeText(
+                            this@ModProduk,
+                            "Memuat gambar...",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                },
+                onSuccess = { _, result ->
+                    Log.d(TAG, "Image loaded successfully with Coil")
+                    runOnUiThread {
+                        Toast.makeText(
+                            this@ModProduk,
+                            "✓ Preview gambar berhasil dimuat",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                },
+                onError = { _, result ->
+                    val errorMsg = result.throwable.message ?: "Unknown error"
+                    Log.e(TAG, "Coil failed: $errorMsg", result.throwable)
+                    
+                    runOnUiThread {
+                        // Coba dengan Glide sebagai fallback
+                        loadImageWithGlide(url)
+                    }
+                }
+            )
+        }
+    }
+    
+    private fun loadImageWithGlide(url: String) {
+        Log.d(TAG, "Trying fallback with Glide: $url")
+        
+        // Cek jika URL adalah Imgur album
+        if (url.contains("/a/") || url.contains("/gallery/")) {
+            val errorMsg = """
+                ❌ URL Imgur Album Tidak Didukung!
+                
+                URL Anda: ${url.take(50)}...
+                
+                Masalah: URL ini adalah album/gallery (ada "/a/" atau "/gallery/")
+                
+                Solusi:
+                1. Buka album di browser
+                2. Klik pada gambar yang ingin digunakan
+                3. Klik kanan → Copy image address
+                4. Gunakan URL baru (format: i.imgur.com/xyz.jpg)
+                
+                Atau upload ulang dengan single image!
+            """.trimIndent()
+            
+            Toast.makeText(this, errorMsg, Toast.LENGTH_LONG).show()
+            return
+        }
+        
+        try {
+            // Register custom OkHttpClient with Glide
+            val factory = OkHttpUrlLoader.Factory(UnsafeOkHttpClient.getUnsafeOkHttpClient())
+            
+            Glide.get(this).registry.replace(
+                GlideUrl::class.java,
+                InputStream::class.java,
+                factory
+            )
+            
+            Glide.with(this)
+                .load(url)
+                .placeholder(R.drawable.produk)
+                .error(R.drawable.produk)
+                .timeout(30000)
+                .override(800, 600)
+                .fitCenter()
+                .listener(object : com.bumptech.glide.request.RequestListener<android.graphics.drawable.Drawable> {
+                    override fun onLoadFailed(
+                        e: com.bumptech.glide.load.engine.GlideException?,
+                        model: Any?,
+                        target: com.bumptech.glide.request.target.Target<android.graphics.drawable.Drawable>,
+                        isFirstResource: Boolean
+                    ): Boolean {
+                        Log.e(TAG, "Glide also failed: ${e?.message}", e)
+                        
+                        val errorDetails = """
+                            Gagal memuat gambar.
+                            
+                            Kemungkinan penyebab:
+                            1. URL adalah album/gallery (bukan direct image)
+                            2. Koneksi internet tidak stabil
+                            3. URL gambar tidak valid
+                            4. Server gambar sedang down
+                            
+                            Solusi:
+                            - Gunakan direct image link (i.imgur.com/xyz.jpg)
+                            - Jangan gunakan album link (/a/ atau /gallery/)
+                            - Coba upload ulang ke Imgur (single image)
+                            - Gunakan WiFi lain atau VPN
+                        """.trimIndent()
+                        
+                        runOnUiThread {
+                            Toast.makeText(
+                                this@ModProduk,
+                                errorDetails,
+                                Toast.LENGTH_LONG
+                            ).show()
+                        }
+                        return false
+                    }
+
+                    override fun onResourceReady(
+                        resource: android.graphics.drawable.Drawable,
+                        model: Any,
+                        target: com.bumptech.glide.request.target.Target<android.graphics.drawable.Drawable>?,
+                        dataSource: com.bumptech.glide.load.DataSource,
+                        isFirstResource: Boolean
+                    ): Boolean {
+                        Log.d(TAG, "Glide loaded successfully")
+                        runOnUiThread {
+                            Toast.makeText(
+                                this@ModProduk,
+                                "✓ Preview gambar berhasil dimuat",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
+                        return false
+                    }
+                })
+                .into(imgPreview)
+        } catch (e: Exception) {
+            Log.e(TAG, "Exception in Glide", e)
+            Toast.makeText(
+                this,
+                "Error: ${e.message}",
+                Toast.LENGTH_LONG
+            ).show()
+        }
     }
 
     private fun buatChip(

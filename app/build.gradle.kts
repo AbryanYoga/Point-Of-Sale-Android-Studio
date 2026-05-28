@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.google.gms.google.services)
+    id("kotlin-kapt")
 }
 
 android {
@@ -38,7 +39,15 @@ android {
 }
 
 dependencies {
+    // Image Loading Libraries
     implementation("com.github.bumptech.glide:glide:4.16.0")
+    kapt("com.github.bumptech.glide:compiler:4.16.0")
+    implementation("com.github.bumptech.glide:okhttp3-integration:4.16.0")
+    implementation("io.coil-kt:coil:2.5.0")
+    
+    // Network
+    implementation("com.squareup.okhttp3:okhttp:4.12.0")
+    
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
