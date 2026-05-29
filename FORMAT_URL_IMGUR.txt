@@ -1,0 +1,117 @@
+═══════════════════════════════════════════════════════════════
+  FORMAT URL IMGUR - QUICK REFERENCE
+═══════════════════════════════════════════════════════════════
+
+📤 CARA UPLOAD KE IMGUR:
+
+1. Buka: https://imgur.com
+2. Klik "New post" (tombol hijau)
+3. Upload gambar (drag & drop atau pilih file)
+4. Tunggu sampai selesai
+
+═══════════════════════════════════════════════════════════════
+
+🔗 CARA DAPAT LINK:
+
+CARA 1: DIRECT LINK (RECOMMENDED) ✅
+────────────────────────────────────────────────────────────
+• Klik kanan pada gambar
+• Pilih "Copy image address"
+• Format: https://i.imgur.com/abc123.jpg
+• ADA EKSTENSI .jpg ✓
+
+
+CARA 2: SHARE LINK (TANPA EKSTENSI) ✅
+────────────────────────────────────────────────────────────
+• Klik tombol "Copy link"
+• Format: https://imgur.com/abc123
+• TIDAK ADA EKSTENSI (tapi tetap bisa digunakan!) ✓
+
+
+CARA 3: KONVERSI MANUAL ✅
+────────────────────────────────────────────────────────────
+Dari: https://imgur.com/abc123
+Ke:   https://i.imgur.com/abc123.jpg
+
+Tambahkan:
+• "i." di depan imgur.com
+• ".jpg" di belakang kode
+
+═══════════════════════════════════════════════════════════════
+
+✅ FORMAT YANG DITERIMA APLIKASI:
+
+DENGAN EKSTENSI:
+• https://i.imgur.com/abc123.jpg ✓
+• https://i.imgur.com/abc123.png ✓
+• https://i.imgur.com/abc123.jpeg ✓
+
+TANPA EKSTENSI (IMGUR):
+• https://imgur.com/abc123 ✓
+• https://i.imgur.com/abc123 ✓
+
+DOMAIN LAIN:
+• https://i.postimg.cc/xyz/image.jpg ✓
+• https://picsum.photos/400/300 ✓
+• https://i.imgbb.com/xyz.png ✓
+
+═══════════════════════════════════════════════════════════════
+
+🎯 CONTOH LENGKAP:
+
+1. Upload gambar kebab ke Imgur
+2. Setelah upload, dapat URL: https://imgur.com/xyz789
+3. Pilih salah satu:
+
+   OPSI A: Copy image address
+   → https://i.imgur.com/xyz789.jpg
+
+   OPSI B: Gunakan share link langsung
+   → https://imgur.com/xyz789
+
+   OPSI C: Konversi manual
+   → https://i.imgur.com/xyz789.jpg
+
+4. Paste di aplikasi
+5. Klik "Preview Gambar"
+6. Gambar muncul! ✓
+
+═══════════════════════════════════════════════════════════════
+
+💡 TIPS:
+
+✓ Gunakan "Copy image address" untuk direct link
+✓ Share link tanpa .jpg juga bisa digunakan
+✓ Cek URL di browser sebelum paste di aplikasi
+✓ Simpan link untuk digunakan lagi nanti
+
+═══════════════════════════════════════════════════════════════
+
+❌ YANG TIDAK BISA DIGUNAKAN:
+
+• Link Google Drive biasa
+• Screenshot dari Google Images
+• Link yang perlu login
+• Link yang expired
+
+═══════════════════════════════════════════════════════════════
+
+🧪 URL TEST:
+
+Coba URL ini untuk testing:
+
+https://picsum.photos/400/300
+https://imgur.com/removed (contoh tanpa ekstensi)
+https://i.imgur.com/removed.png (contoh dengan ekstensi)
+
+═══════════════════════════════════════════════════════════════
+
+📞 JIKA MASIH BINGUNG:
+
+1. Upload gambar ke imgur.com
+2. Klik kanan pada gambar
+3. "Copy image address"
+4. Paste di aplikasi
+5. Done! ✓
+
+═══════════════════════════════════════════════════════════════

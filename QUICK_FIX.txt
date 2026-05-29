@@ -1,0 +1,82 @@
+═══════════════════════════════════════════════════════════════
+  QUICK FIX - Preview Gambar Tidak Muncul
+═══════════════════════════════════════════════════════════════
+
+🚨 LANGKAH WAJIB (URUTAN PENTING!):
+
+1. SYNC GRADLE
+   File → Sync Project with Gradle Files
+   ⏳ Tunggu sampai selesai!
+
+2. CLEAN PROJECT
+   Build → Clean Project
+
+3. REBUILD PROJECT
+   Build → Rebuild Project
+
+4. UNINSTALL APLIKASI LAMA
+   Hapus aplikasi dari device/emulator
+
+5. RUN APLIKASI
+   Shift + F10
+
+═══════════════════════════════════════════════════════════════
+
+🧪 TEST DENGAN URL INI:
+
+https://picsum.photos/400/300
+
+Atau:
+
+https://via.placeholder.com/400x300.png
+
+═══════════════════════════════════════════════════════════════
+
+🔍 CEK LOGCAT:
+
+1. Buka Logcat (Alt+6)
+2. Filter: tag:ModProduk
+3. Lihat pesan error
+
+═══════════════════════════════════════════════════════════════
+
+✅ YANG BERHASIL:
+- Toast: "Memuat gambar..."
+- Gambar muncul
+- Toast: "✓ Preview gambar berhasil dimuat"
+
+❌ YANG GAGAL:
+- Toast: "Gagal memuat gambar: [error]"
+- Lihat detail error di Logcat
+
+═══════════════════════════════════════════════════════════════
+
+📋 CHECKLIST:
+
+□ Sudah sync gradle?
+□ Sudah clean & rebuild?
+□ Sudah uninstall app lama?
+□ Device terhubung internet?
+□ URL dimulai http:// atau https://?
+□ URL bisa dibuka di browser?
+□ Sudah cek Logcat?
+
+═══════════════════════════════════════════════════════════════
+
+💡 TIPS:
+
+✓ Gunakan Imgur untuk upload gambar
+✓ Copy "Direct Link" atau "Image Address"
+✓ Test dengan URL sederhana dulu
+✓ Pastikan URL langsung ke file gambar (.jpg, .png)
+
+═══════════════════════════════════════════════════════════════
+
+📞 MASIH BERMASALAH?
+
+Kirim screenshot:
+1. Logcat (filter: tag:ModProduk)
+2. Toast message yang muncul
+3. URL yang digunakan
+
+═══════════════════════════════════════════════════════════════

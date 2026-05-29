@@ -1,0 +1,127 @@
+═══════════════════════════════════════════════════════════════
+  🔴 MASALAH: URL IMGUR ALBUM
+═══════════════════════════════════════════════════════════════
+
+URL ANDA:
+https://imgur.com/a/gZ80HnF
+                ↑
+             Ada "/a/" = ALBUM!
+
+ERROR:
+BitmapFactory returned a null bitmap
+
+PENYEBAB:
+URL ini adalah ALBUM (halaman HTML), bukan gambar langsung!
+
+═══════════════════════════════════════════════════════════════
+
+✅ SOLUSI CEPAT:
+
+OPSI 1: AMBIL DARI ALBUM YANG ADA
+────────────────────────────────────────────────────────────
+
+1. Buka: https://imgur.com/a/gZ80HnF
+2. Klik pada gambar yang ingin digunakan
+3. Klik kanan → "Copy image address"
+4. Dapat URL seperti: https://i.imgur.com/xyz123.jpg
+5. Paste URL baru di aplikasi
+6. Done! ✓
+
+
+OPSI 2: UPLOAD ULANG (PALING MUDAH)
+────────────────────────────────────────────────────────────
+
+1. Buka: https://imgur.com
+2. Klik "New post"
+3. Upload SATU gambar saja (jangan multiple!)
+4. Klik kanan → "Copy image address"
+5. Dapat: https://i.imgur.com/abc123.jpg
+6. Paste di aplikasi
+7. Done! ✓
+
+═══════════════════════════════════════════════════════════════
+
+❌ FORMAT YANG SALAH:
+
+https://imgur.com/a/xyz        ← Album (ada "/a/")
+https://imgur.com/gallery/xyz  ← Gallery (ada "/gallery/")
+
+Ini adalah halaman HTML, bukan gambar!
+
+
+✅ FORMAT YANG BENAR:
+
+https://i.imgur.com/xyz.jpg     ← Direct image ✓
+https://imgur.com/xyz           ← Single image ✓
+https://i.imgur.com/xyz.png     ← Direct image ✓
+
+Ini adalah file gambar langsung!
+
+═══════════════════════════════════════════════════════════════
+
+🎯 CARA MEMBEDAKAN:
+
+CEK URL ANDA:
+• Ada "/a/" atau "/gallery/"? → ALBUM (SALAH!)
+• Tidak ada "/a/"? → SINGLE IMAGE (BENAR!)
+
+TEST DI BROWSER:
+• Buka URL di browser
+• Jika ada banyak elemen (judul, deskripsi, dll) → ALBUM
+• Jika hanya gambar saja → DIRECT IMAGE
+
+═══════════════════════════════════════════════════════════════
+
+📋 LANGKAH DETAIL - AMBIL DARI ALBUM:
+
+1. Buka album Anda di browser
+2. Anda akan lihat gambar dalam album
+3. Klik pada gambar (akan membuka view lebih besar)
+4. Klik kanan pada gambar
+5. Pilih "Copy image address" atau "Copy image link"
+6. URL yang di-copy akan seperti:
+   https://i.imgur.com/abc123.jpg
+7. Paste URL ini di aplikasi
+8. Klik "Preview Gambar"
+9. Gambar muncul! ✓
+
+═══════════════════════════════════════════════════════════════
+
+💡 TIPS:
+
+✓ Selalu upload SINGLE IMAGE, bukan multiple
+✓ Gunakan "Copy image address", bukan copy URL dari address bar
+✓ Cek URL sebelum paste: tidak boleh ada "/a/" atau "/gallery/"
+✓ Test URL di browser dulu
+
+═══════════════════════════════════════════════════════════════
+
+🧪 URL TEST:
+
+Coba URL ini untuk memastikan aplikasi bekerja:
+
+https://picsum.photos/400/300
+
+Jika URL ini berhasil, berarti masalah di URL Imgur Anda!
+
+═══════════════════════════════════════════════════════════════
+
+⚠️ JANGAN LUPA:
+
+Setelah update kode, WAJIB:
+1. Sync Gradle
+2. Clean Project
+3. Rebuild Project
+4. Uninstall aplikasi lama
+5. Run aplikasi
+
+═══════════════════════════════════════════════════════════════
+
+📞 KESIMPULAN:
+
+MASALAH: URL album (ada "/a/")
+SOLUSI: Gunakan direct image link (i.imgur.com/xyz.jpg)
+
+Buka album → Klik gambar → Copy image address → Done!
+
+═══════════════════════════════════════════════════════════════

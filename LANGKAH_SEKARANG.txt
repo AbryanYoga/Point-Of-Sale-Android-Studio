@@ -1,0 +1,116 @@
+═══════════════════════════════════════════════════════════════
+  LANGKAH YANG HARUS DILAKUKAN SEKARANG
+═══════════════════════════════════════════════════════════════
+
+⚠️ PENTING: Ikuti urutan ini dengan TELITI!
+
+1. SYNC GRADLE
+   ────────────────────────────────────────────────────────────
+   Di Android Studio:
+   File → Sync Project with Gradle Files
+   
+   ⏳ TUNGGU sampai muncul "Gradle sync finished" di bawah
+   ⏳ Jangan lanjut sebelum selesai!
+   
+   
+2. CLEAN PROJECT
+   ────────────────────────────────────────────────────────────
+   Build → Clean Project
+   
+   ⏳ Tunggu selesai
+   
+   
+3. REBUILD PROJECT
+   ────────────────────────────────────────────────────────────
+   Build → Rebuild Project
+   
+   ⏳ Tunggu 1-3 menit sampai selesai
+   ⏳ Lihat progress bar di bawah
+   
+   
+4. UNINSTALL APLIKASI LAMA
+   ────────────────────────────────────────────────────────────
+   Di device/emulator:
+   Settings → Apps → PointOfSales → Uninstall
+   
+   ATAU di terminal Android Studio:
+   adb uninstall com.abryan.pointofsales
+   
+   ⚠️ WAJIB! Jika tidak uninstall, perubahan tidak berlaku!
+   
+   
+5. RUN APLIKASI
+   ────────────────────────────────────────────────────────────
+   Shift + F10
+   
+   ⏳ Tunggu instalasi selesai
+   
+   
+6. TEST DENGAN URL INI
+   ────────────────────────────────────────────────────────────
+   https://picsum.photos/400/300
+   
+   Buka aplikasi → Produk → Tambah Produk
+   Paste URL di atas
+   Klik "Preview Gambar"
+   
+   ✅ Jika berhasil: Gambar muncul
+   ❌ Jika gagal: Kirim screenshot Logcat
+
+═══════════════════════════════════════════════════════════════
+
+🎯 YANG SUDAH DIPERBAIKI:
+
+✅ Tambah Network Security Config
+✅ Tambah Fallback System (Coil → Glide)
+✅ Tambah OkHttp untuk network
+✅ Tambah Timeout 30 detik
+✅ Tambah Error handling detail
+✅ Support postimg.cc, imgur.com, dll
+
+═══════════════════════════════════════════════════════════════
+
+📊 HASIL YANG DIHARAPKAN:
+
+Skenario 1: BERHASIL
+─────────────────────
+Toast: "Memuat gambar..."
+→ Gambar muncul
+→ Toast: "✓ Preview gambar berhasil dimuat"
+
+
+Skenario 2: GAGAL DENGAN ERROR JELAS
+─────────────────────────────────────
+Toast: "Memuat gambar..."
+→ Toast: "Tidak dapat terhubung ke server"
+   ATAU "Koneksi timeout"
+   ATAU "Gambar tidak ditemukan (404)"
+
+═══════════════════════════════════════════════════════════════
+
+🔍 JIKA MASIH GAGAL:
+
+1. Buka Logcat (Alt+6)
+2. Filter: tag:ModProduk
+3. Screenshot semua pesan error
+4. Kirim ke saya
+
+═══════════════════════════════════════════════════════════════
+
+💡 TIPS:
+
+- Jangan skip langkah Rebuild!
+- Jangan skip langkah Uninstall!
+- Test dengan URL sederhana dulu
+- Jika URL test berhasil tapi postimg gagal = masalah di postimg
+- Gunakan Imgur sebagai alternatif
+
+═══════════════════════════════════════════════════════════════
+
+📞 URL TEST ALTERNATIF:
+
+https://picsum.photos/400/300
+https://via.placeholder.com/400x300.png
+https://i.imgur.com/xxxxx.jpg (upload ke imgur dulu)
+
+═══════════════════════════════════════════════════════════════
